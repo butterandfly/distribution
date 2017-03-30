@@ -1,0 +1,18 @@
+{
+  "name": "distribution",
+  "main": "index.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.4.0",
+    "d3": "~4.7.4",
+    "jstat": "~1.5.3",
+    "app-layout": "~0.10.7",
+    "app-route": "PolymerElements/app-route#~0.9.3",
+    "iron-pages": "~1.0.8"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  }
+}

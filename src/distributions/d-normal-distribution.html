@@ -1,0 +1,127 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<script src="../../bower_components/d3/d3.min.js"></script>
+<script src="../../bower_components/jstat/dist/jstat.min.js"></script>
+
+<dom-module id="d-normal-distribution">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      .axis path,
+      .axis line {
+          fill: none;
+          stroke: #000;
+          shape-rendering: crispEdges;
+      }
+
+      .line {
+        fill: none;
+        stroke: coral;
+        stroke-width: 1.5px;
+      }
+    </style>
+
+  <h1>d-normal-distribution</h1>
+  <div id="container"></div>
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      function getData() {
+        let data = [];
+
+        for (let i = 0; i < 100000; i++) {
+          let normal = window.jStat.normal(0, 1);
+          let q = normal.sample();
+          let p = normal.pdf(q);
+          let el = {
+              "q": q,
+              "p": p
+          }
+          data.push(el)
+        };
+
+        data.sort(function(x, y) {
+            return x.q - y.q;
+        });
+
+        return data;
+      }
+
+      Polymer({
+        is: 'd-normal-distribution',
+
+        properties: {
+
+        },
+
+        attached() {
+          let margin = {
+            top: 20,
+            right: 20,
+            bottom: 30,
+            left: 50
+          };
+          let width = 960 - margin.left - margin.right;
+          let height = 500 - margin.top - margin.bottom;
+
+          let scaleX = d3.scaleLinear()
+            .range([0, width]);
+
+          let scaleY = d3.scaleLinear()
+            .range([height, 0]);
+
+          // x轴坐标
+          let xAxis = d3.axisBottom()
+            .scale(scaleX);
+
+          // y轴坐标
+          let yAxis = d3.axisLeft()
+            .scale(scaleY);
+
+          // 生成曲线
+          let line = d3.line()
+            .x(function(d) {
+                return scaleX(d.q);
+            })
+            .y(function(d) {
+                return scaleY(d.p);
+            });
+
+          let svg = d3.select(this.$.container).append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+          let data = getData();
+          scaleX.domain(d3.extent(data, function(d) {
+              return d.q;
+            }));
+          scaleY.domain(d3.extent(data, function(d) {
+              return d.p;
+            }));
+
+          svg.append("path")
+            .datum(data)
+            .attr("class", "line")
+            .attr("d", line);
+
+          svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+
+          svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis);
+        }
+      });
+    })();
+  </script>
+</dom-module>

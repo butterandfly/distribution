@@ -1,0 +1,6 @@
+{
+  "name": "distribution",
+  "short_name": "distribution",
+  "start_url": "/",
+  "display": "standalone"
+}

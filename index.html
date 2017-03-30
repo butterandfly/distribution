@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>distribution</title>
+    <meta name="description" content="distribution description">
+    <style media="screen">
+      body {
+        margin: 0;
+      }
+    </style>
+
+    <!-- See https://goo.gl/OOhYW5 -->
+    <link rel="manifest" href="/manifest.json">
+
+    <script>
+      // setup Polymer options
+      window.Polymer = {lazyRegister: true, dom: 'shadow'};
+      // load webcomponents polyfills
+      (function() {
+        if ('registerElement' in document &&
+          'import' in document.createElement('link') &&
+          'content' in document.createElement('template')) {
+          // browser has web components
+        } else {
+          // polyfill web components
+          let e = document.createElement('script');
+          e.src = '/bower_components/webcomponentsjs/webcomponents-lite.min.js';
+          document.head.appendChild(e);
+        }
+      })();
+    </script>
+    <link rel="import" href="/src/distribution-app/distribution-app.html">
+  </head>
+  <body>
+    <distribution-app></distribution-app>
+  </body>
+</html>

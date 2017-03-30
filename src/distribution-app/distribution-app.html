@@ -1,0 +1,143 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../../bower_components/app-route/app-location.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+
+<link rel="import" href="../distributions/d-normal-distribution.html">
+<link rel="import" href="../distributions/d-binomial-distribution.html">
+<link rel="import" href="../distributions/d-geometric-distribution.html">
+
+<dom-module id="distribution-app">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      app-toolbar {
+        background: coral;
+        color: white;
+      }
+
+      #selector {
+        display: flex;
+        flex-direction: column;
+      }
+
+      #selector a {
+        color: #000;
+        text-decoration: none;
+        height: 48px;
+      }
+
+      #selector a span {
+        padding-left: 48px;
+        line-height: 48px;
+      }
+
+      #selector h3 {
+        color: #777;
+        font-weight: 400;
+        font-size: 16px;
+        padding-left: 8px;
+        margin: 0;
+        margin-top: 8px;
+      }
+
+      .iron-selected span {
+        font-weight: bold;
+      }
+
+      .iron-selected .border-left {
+        position: absolute;
+        width: 4px;
+        height: 48px;
+        border-left: 4px solid coral;
+      }
+
+      a:not([class="iron-selected"]):hover .border-left {
+        position: absolute;
+        width: 4px;
+        height: 48px;
+        border-left: 4px solid #777;
+      }
+
+      a:not([class="iron-selected"]):hover{
+        background-color: #ddd;
+      }
+    </style>
+
+
+    <app-location id="location" path="{{path}}" route="{{route}}"></app-location>
+
+    <app-route route="{{route}}"
+        pattern="/:page"
+        data="{{routeData}}">
+    </app-route>
+
+    <app-toolbar>
+      <paper-icon-button icon="menu" on-tap="toggleMenu"></paper-icon-button>
+      <div main-title>Distribution</div>
+    </app-toolbar>
+
+    <iron-pages attr-for-selected="id" selected="[[routeData.page]]">
+      <d-binomial-distribution id="binomail"></d-binomial-distribution>
+      <d-geometric-distribution id="geometric"></d-geometric-distribution>
+      <d-normal-distribution id="normal"></d-normal-distribution>
+    </iron-pages>
+
+    <app-drawer id="drawer">
+      <iron-selector attr-for-selected="data-path" selected="[[_selected]]" id="selector">
+        <h3>离散分布</h3>
+        <a href="/binomail" data-path="/binomail" on-tap="toggleMenu">
+          <div class="border-left"></div>
+          <span>二项分布</span>
+        </a>
+        <a href="/geometric" data-path="/geometric" on-tap="toggleMenu">
+          <div class="border-left"></div>
+          <span>几何分布</span>
+        </a>
+
+        <h3>连续分布</h3>
+        <a href="/normal" data-path="/normal" on-tap="toggleMenu">
+          <div class="border-left"></div>
+          <span>正态分布</span>
+        </a>
+      </iron-selector>
+    </app-drawer>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'distribution-app',
+
+      properties: {
+        prop1: {
+          type: String,
+          value: 'distribution-app',
+        },
+      },
+
+      observers: [
+        '_redirect(path)'
+      ],
+
+      toggleMenu() {
+        this.$.drawer.toggle()
+      },
+
+      // 对某些url进行重定向。
+      _redirect(path) {
+        if (path === '/' || path === '') {
+          this.path = '/normal';
+        }
+      },
+    });
+  </script>
+</dom-module>

@@ -1,0 +1,78 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<script src="../../bower_components/d3/d3.js"></script>
+
+<dom-module id="d-discrete">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      .bar rect {
+        fill: coral;
+      }
+    </style>
+
+  </template>
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'd-discrete',
+
+        properties: {
+
+        },
+
+        draw(data) {
+          let margin = {
+            top: 10,
+            right: 30,
+            bottom: 30,
+            left: 50
+          };
+          let width = 960 - margin.left - margin.right;
+          let height = 500 - margin.top - margin.bottom;
+
+          let svg = d3.select(this.root).append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+          // 比例
+          let x = d3.scaleBand().rangeRound([0, width]).padding(0.1);
+          x.domain(data.map(function(d) { return d.x; }));
+
+          let y = d3.scaleLinear()
+            .domain([0, d3.max(data, function(d) {return d.y})])
+            .range([height, 0]);
+
+          let bar = svg.selectAll('.bar')
+            .data(data)
+            .enter()
+            .append('g')
+            .attr('class', 'bar');
+
+          bar.append('rect')
+            .attr('x', 1)
+            .attr('width', x.bandwidth())
+            .attr('height', function(d) {return height - y(d.y);})
+            .attr("x", function(d) { return x(d.x); })
+            .attr("y", function(d) { return y(d.y); });
+
+          svg.append("g")
+            .attr("class", "axis axis--x")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x));
+
+          svg.append("g")
+            .attr("class", "axis axis--y")
+            .call(d3.axisLeft(y).ticks(10));
+        }
+      });
+    })();
+  </script>
+</dom-module>

@@ -1,0 +1,52 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<script src="../../bower_components/jstat/dist/jstat.min.js"></script>
+
+<link rel="import" href="./d-discrete.html">
+
+<dom-module id="d-geometric-distribution">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <h1>d-geometric-distribution</h1>
+    <d-discrete id="discreteChart"></d-discrete>
+  </template>
+  <script>
+    (function() {
+      'use strict';
+
+      function geomPdf(p, x) {
+        return p * Math.pow(1 - p, x - 1);
+      }
+
+      Polymer({
+        is: 'd-geometric-distribution',
+
+        properties: {
+
+        },
+
+        attached() {
+          let p = 0.5;
+          let data = [];
+          for(let i = 1; true; i++) {
+            let y = geomPdf(p, i);
+            if (y < 0.001) {
+              break;
+            }
+            data.push({
+              x: i,
+              y: y
+            });
+          }
+
+          this.$.discreteChart.draw(data);
+        }
+      });
+    })();
+  </script>
+</dom-module>
