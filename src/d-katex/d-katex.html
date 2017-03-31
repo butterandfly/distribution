@@ -1,0 +1,39 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="./katex-fonts.html">
+<link rel="import" href="./katex-style.html">
+<script src="./katex.min.js"></script>
+
+<dom-module id="d-katex">
+  <template>
+    <style include="katex-style"></style>
+    <style>
+      :host {
+        display: inline;
+      }
+    </style>
+
+    <span id="container"></span>
+  </template>
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'd-katex',
+
+        properties: {
+          tex: {
+            type: String,
+            observer: '_redraw'
+          }
+        },
+
+        _redraw(tex) {
+          window.katex.render(tex, this.$.container, {
+            displayMode: false
+          });
+        }
+      });
+    })();
+  </script>
+</dom-module>

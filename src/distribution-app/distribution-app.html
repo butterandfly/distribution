@@ -1,6 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/app-layout/app-drawer/app-drawer.html">
-<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
@@ -11,6 +10,7 @@
 <link rel="import" href="../distributions/d-normal-distribution.html">
 <link rel="import" href="../distributions/d-binomial-distribution.html">
 <link rel="import" href="../distributions/d-geometric-distribution.html">
+<link rel="import" href="../distributions/d-poisson-distribution.html">
 
 <dom-module id="distribution-app">
   <template>
@@ -19,8 +19,15 @@
         display: block;
       }
 
-      app-toolbar {
-        background: coral;
+      app-drawer {
+        z-index: 1;
+      }
+
+      #menuBtn {
+        position: absolute;
+        left: 24px;
+        top: 12px;
+        z-index: 1;
         color: white;
       }
 
@@ -80,15 +87,16 @@
         data="{{routeData}}">
     </app-route>
 
-    <app-toolbar>
+    <!-- <app-toolbar>
       <paper-icon-button icon="menu" on-tap="toggleMenu"></paper-icon-button>
-      <div main-title>Distribution</div>
-    </app-toolbar>
+    </app-toolbar> -->
+    <paper-icon-button id="menuBtn" icon="menu" on-tap="toggleMenu"></paper-icon-button>
 
     <iron-pages attr-for-selected="id" selected="[[routeData.page]]">
       <d-binomial-distribution id="binomail"></d-binomial-distribution>
       <d-geometric-distribution id="geometric"></d-geometric-distribution>
       <d-normal-distribution id="normal"></d-normal-distribution>
+      <d-poisson-distribution id="poisson"></d-poisson-distribution>
     </iron-pages>
 
     <app-drawer id="drawer">
@@ -101,6 +109,10 @@
         <a href="/geometric" data-path="/geometric" on-tap="toggleMenu">
           <div class="border-left"></div>
           <span>几何分布</span>
+        </a>
+        <a href="/poisson" data-path="/poisson" on-tap="toggleMenu">
+          <div class="border-left"></div>
+          <span>泊松分布</span>
         </a>
 
         <h3>连续分布</h3>
@@ -118,10 +130,6 @@
       is: 'distribution-app',
 
       properties: {
-        prop1: {
-          type: String,
-          value: 'distribution-app',
-        },
       },
 
       observers: [
@@ -129,7 +137,7 @@
       ],
 
       toggleMenu() {
-        this.$.drawer.toggle()
+        this.$.drawer.toggle();
       },
 
       // 对某些url进行重定向。
@@ -137,7 +145,7 @@
         if (path === '/' || path === '') {
           this.path = '/normal';
         }
-      },
+      }
     });
   </script>
 </dom-module>

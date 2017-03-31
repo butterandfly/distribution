@@ -1,0 +1,29 @@
+{
+  "name": "distribution",
+  "version": "0.2.0",
+  "description": "",
+  "main": "index.html",
+  "dependencies": {
+    "del": "^2.2.2",
+    "eslint-config-google": "^0.7.1",
+    "eslint-plugin-html": "^2.0.1",
+    "gulp": "^3.9.1",
+    "gulp-eslint": "^3.0.1",
+    "merge-stream": "^1.0.1",
+    "polymer-build": "^0.9.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/butterandfly/distribution.git"
+  },
+  "author": "butterandfly",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/butterandfly/distribution/issues"
+  },
+  "homepage": "https://github.com/butterandfly/distribution#readme"
+}

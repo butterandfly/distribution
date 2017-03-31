@@ -1,24 +1,81 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
 
 <script src="../../bower_components/jstat/dist/jstat.min.js"></script>
 
 <link rel="import" href="./d-discrete.html">
+<link rel="import" href="./d-info.html">
+<link rel="import" href="../d-info-dialog.html">
+<link rel="import" href="../d-katex/d-katex.html">
+<link rel="import" href="./reference-style.html">
 
 <dom-module id="d-geometric-distribution">
   <template>
+    <style include="reference-style"></style>
     <style>
       :host {
         display: block;
       }
+
+      #settings {
+        width: 500px;
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 24px;
+      }
+
+      app-toolbar {
+        background: coral;
+        color: white;
+      }
+
+      #container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
     </style>
 
-    <h1>d-geometric-distribution</h1>
-    <d-discrete id="discreteChart"></d-discrete>
+    <app-toolbar>
+      <div main-title spacer>几何分布（Geometric Distribution）</div>
+      <paper-icon-button icon="info" on-tap="openDialog"></paper-icon-button>
+    </app-toolbar>
+
+    <div id="container">
+      <div id="settings">
+        <paper-input label="成功概率（p）" type="number" value="{{distributionP}}"></paper-input>
+      </div>
+      <d-info mean="[[distributionMean]]" std="[[distributionSD]]" variance="[[distributionVariance]]"></d-info>
+      <d-discrete id="discreteChart"></d-discrete>
+    </div>
+
+    <d-info-dialog id="dialog">
+      <div id="reference">
+        <h2 class="title">几何分布
+          <a href="https://zh.wikipedia.org/wiki/%E5%B9%BE%E4%BD%95%E5%88%86%E4%BD%88" class="wiki">维基百科</a>
+        </h2>
+        <p>几何分布（Geometric distribution），指在伯努利试验中，得到一次成功所需要的试验次数X的离散型概率分布。</p>
+        <h3>Mean:</h3>
+        <d-katex tex="\mu = E(X) = \frac{1}{p}"></d-katex>
+        <h3>Variance:</h3>
+        <d-katex tex="\sigma^2 = Var(X) = \frac{1-p}{p^2}"></d-katex>
+        <h3>PMF:</h3>
+        <d-katex tex="P(X = k) = (1-p)^{k-1}p"></d-katex>
+      </div>
+    </d-info-dialog>
   </template>
   <script>
     (function() {
       'use strict';
 
+      /**
+       * 计算pdf
+       * @param {Number} p 成功概率
+       * @param {Number} x
+       * @return {Number} pdf
+       */
       function geomPdf(p, x) {
         return p * Math.pow(1 - p, x - 1);
       }
@@ -27,11 +84,52 @@
         is: 'd-geometric-distribution',
 
         properties: {
+          distributionP: {
+            value: 0.5,
+            type: Number,
+            notify: true
+          },
 
+          distributionMean: {
+            type: Number,
+            computed: '_computeMean(distributionP)'
+          },
+
+          distributionVariance: {
+            type: Number,
+            computed: '_computeVariance(distributionP)'
+          },
+
+          distributionSD: {
+            type: Number,
+            computed: '_computeSD(distributionVariance)'
+          }
         },
 
-        attached() {
-          let p = 0.5;
+        observers: [
+          '_redraw(distributionP)'
+        ],
+
+        _computeMean(distributionP) {
+          let result = (1 - distributionP) / distributionP;
+          return result.toFixed(2);
+        },
+
+        _computeVariance(distributionP) {
+          let result = (1 - distributionP) / Math.pow(distributionP, 2);
+          return result.toFixed(2);
+        },
+
+        _computeSD(distributionVariance) {
+          return Math.sqrt(distributionVariance).toFixed(2);
+        },
+
+        _redraw(distributionP) {
+          if (!distributionP) {
+            return;
+          }
+
+          let p = +distributionP;
           let data = [];
           for(let i = 1; true; i++) {
             let y = geomPdf(p, i);
@@ -44,7 +142,11 @@
             });
           }
 
-          this.$.discreteChart.draw(data);
+          this.$.discreteChart.data = data;
+        },
+
+        openDialog() {
+          this.$.dialog.open();
         }
       });
     })();

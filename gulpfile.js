@@ -2,8 +2,6 @@ const gulp = require('gulp');
 const eslint = require('gulp-eslint');
 const del = require('del');
 const PolymerProject = require('polymer-build').PolymerProject;
-const tar = require('gulp-tar');
-const gzip = require('gulp-gzip');
 
 // 检查组件代码
 gulp.task('lint-components', function() {
@@ -88,20 +86,11 @@ gulp.task('clean', function() {
 });
 
 // 项目构建
-// const project = new PolymerProject(require('./polymer.json'));
-// const mergeStream = require('merge-stream');
-//
-// gulp.task('build', ['clean'], function() {
-//   let tag = 'build';
-//   if (process.env.TRAVIS_TAG) {
-//     tag = process.env.TRAVIS_TAG;
-//   }
-//
-//   return mergeStream(project.sources(), project.dependencies())
-//   .pipe(project.analyzer)
-//   .pipe(project.bundler)
-//   .pipe(gulp.dest('build/ruifile'))
-//   .pipe(tar('ruifile-' + tag + '.tar'))
-//   .pipe(gzip())
-//   .pipe(gulp.dest('build'));
-// });
+const project = new PolymerProject(require('./polymer.json'));
+const mergeStream = require('merge-stream');
+
+gulp.task('build', ['clean'], function() {
+  return mergeStream(project.sources(), project.dependencies())
+  .pipe(project.bundler())
+  .pipe(gulp.dest('build'));
+});

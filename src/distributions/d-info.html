@@ -1,0 +1,49 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<dom-module id="d-info">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      #info {
+        margin: 16px 0;
+      }
+
+      #info>span {
+        margin: 0 16px;
+      }
+
+      #info>span>span {
+        color: slateblue;
+      }
+    </style>
+
+    <div id="info">
+      <span>Mean: <span>[[mean]]</span></span>
+      <span>Variance: <span>[[variance]]</span></span>
+      <span>Standard Deviation: <span>[[std]]</span></span>
+    </div>
+  </template>
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'd-info',
+
+        properties: {
+          mean: {
+            type: Number
+          },
+          std: {
+            type: Number
+          },
+          variance: {
+            type: Number
+          }
+        }
+      });
+    })();
+  </script>
+</dom-module>
