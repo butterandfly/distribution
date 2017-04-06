@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>stat-geometric test</title>
+
+    <script src="../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../bower_components/web-component-tester/browser.js"></script>
+
+    <link rel="import" href="./stat-geometric.html">
+  </head>
+  <body>
+    <test-fixture id="basic">
+      <template>
+        <stat-geometric></stat-geometric>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('stat-geometric', function() {
+        let element;
+
+        setup(() => {
+          element = fixture('basic');
+        });
+
+        test('Instantiating the element works', function() {
+          assert.equal(element.is, 'stat-geometric');
+        });
+
+        test('"pdf" function', () => {
+          element.p = 0.2;
+          assert.equal(element.pdf(1).toFixed(2), 0.20);
+          assert.equal(element.pdf(2).toFixed(2), 0.16);
+        });
+
+        test('"cdf" function', () => {
+          element.p = 0.2;
+          assert.equal(element.cdf(1).toFixed(2), 0.20);
+          assert.equal(element.cdf(2).toFixed(2), 0.36);
+        });
+
+        test('"statInfo" property', () => {
+          element.p = 0.4;
+          assert.equal(element.statInfo.mean, 2.50);
+          assert.equal(element.statInfo.variance, 3.75);
+          assert.equal(element.statInfo.std, 1.94);
+        });
+
+        test('"computeProbability" function', () => {
+          element.p = 0.4;
+          assert.equal(element.computeProbability('lt', 4).toFixed(2), 0.87);
+          assert.equal(element.computeProbability('gt', 5).toFixed(2), 0.13);
+          assert.equal(element.computeProbability('between', 2, 2).toFixed(2), 0.24);
+
+          element.p = 0.2;
+          assert.equal(element.computeProbability('lt', 2).toFixed(2), 0.36);
+          assert.equal(element.computeProbability('between', 2, 3).toFixed(2), 0.29);
+        });
+      });
+    </script>
+  </body>
+</html>

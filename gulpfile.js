@@ -85,12 +85,35 @@ gulp.task('clean', function() {
   });
 });
 
-// 项目构建
 const project = new PolymerProject(require('./polymer.json'));
 const mergeStream = require('merge-stream');
+const gulpif = require('gulp-if');
+// const cssSlam = require('css-slam').gulp;
+const htmlMinifier = require('gulp-html-minifier');
+const HtmlSplitter = require('polymer-build').HtmlSplitter;
+const babel = require('gulp-babel');
+const sourcesHtmlSplitter = new HtmlSplitter();
 
+// 项目构建，包含压缩等内容
 gulp.task('build', ['clean'], function() {
-  return mergeStream(project.sources(), project.dependencies())
+  const sourcesStream = project.sources()
+    .pipe(sourcesHtmlSplitter.split())
+    .pipe(gulpif(/\.js$/, babel({presets: ['babili']})))
+    // 暂时不能分离css
+    // .pipe(gulpif(/\.css$/, cssSlam()))
+    // 压缩html，包括删除注释
+    .pipe(gulpif(/\.html$/, htmlMinifier({removeComments: true})))
+    .pipe(sourcesHtmlSplitter.rejoin()); // rejoins those files back into their original location
+
+  const dependenciesStream = project.dependencies()
+    .pipe(sourcesHtmlSplitter.split())
+    .pipe(gulpif(/^((?!polymer).)*.js$/, babel({presets: ['babili']})))
+    // 暂时不能分离css
+    // .pipe(gulpif(/\.css$/, cssSlam()))
+    .pipe(gulpif(/\.html$/, htmlMinifier({removeComments: true})))
+    .pipe(sourcesHtmlSplitter.rejoin()); // rejoins those files back into their original location
+
+  return mergeStream(sourcesStream, dependenciesStream)
   .pipe(project.bundler())
   .pipe(gulp.dest('build'));
 });

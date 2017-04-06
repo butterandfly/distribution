@@ -12,7 +12,16 @@
     "merge-stream": "^1.0.1",
     "polymer-build": "^0.9.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "babili": "0.0.12",
+    "css-slam": "^1.2.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-html-minifier": "^0.1.8",
+    "gulp-if": "^2.0.2",
+    "gulp-ignore": "^2.0.2",
+    "gulp-minifier": "^0.2.1",
+    "gulp-uglify": "^2.1.2"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

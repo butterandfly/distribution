@@ -3,40 +3,25 @@
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 
-<script src="../../bower_components/jstat/dist/jstat.min.js"></script>
-
 <link rel="import" href="./d-discrete.html">
 <link rel="import" href="./d-info.html">
 <link rel="import" href="../d-info-dialog.html">
 <link rel="import" href="../d-katex/d-katex.html">
-<link rel="import" href="./reference-style.html">
+<link rel="import" href="./distribution-style.html">
+<link rel="import" href="./d-x-setting.html">
+<link rel="import" href="./d-distribution-behavior.html">
+<link rel="import" href="../stat/stat-poisson.html">
 
 <dom-module id="d-poisson-distribution">
   <template>
-    <style include="reference-style"></style>
+    <style include="distribution-style"></style>
     <style>
       :host {
         display: block;
       }
-
-      #container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-
-      #settings {
-        width: 500px;
-        display: flex;
-        justify-content: space-around;
-        margin-bottom: 24px;
-      }
-
-      app-toolbar {
-        background: coral;
-        color: white;
-      }
     </style>
+    <stat-poisson id="statPoisson" lambda="[[distributionMean]]" stat-info="{{statInfo}}">
+    </stat-poisson>
 
     <app-toolbar>
       <div main-title spacer>泊松分布（Poisson Distribution）</div>
@@ -47,7 +32,8 @@
       <div id="settings">
         <paper-input label="Mean" type="number" value="{{distributionMean}}"></paper-input>
       </div>
-      <d-info mean="[[distributionMean]]" std="[[distributionSD]]" variance="[[distributionVariance]]"></d-info>
+      <d-x-setting x1="-1" x2="0" id="xSetting" on-updated="_handleXUpdated"></d-x-setting>
+      <d-info mean="[[statInfo.mean]]" std="[[statInfo.std]]" variance="[[statInfo.variance]]" probability="[[selectedProbability]]"></d-info>
       <d-discrete id="discreteChart"></d-discrete>
     </div>
 
@@ -62,7 +48,7 @@
         <h3>Variance:</h3>
         <d-katex tex="\sigma^2 = Var(X) = \lambda"></d-katex>
         <h3>PMF:</h3>
-        <d-katex tex="P(X = x) = \frac {\lambda^xe^{-\lambda}} {x!}"></d-katex>
+        <d-katex tex="P(X = x) = \frac {\lambda^xe^{-\lambda} } {x!}"></d-katex>
       </div>
     </d-info-dialog>
   </template>
@@ -72,22 +58,13 @@
 
       Polymer({
         is: 'd-poisson-distribution',
+        behaviors: [Polymer.DDistributionBehavior],
 
         properties: {
           distributionMean: {
             value: 3,
             type: Number,
             notify: true
-          },
-
-          distributionVariance: {
-            type: Number,
-            computed: '_computeVariance(distributionMean)'
-          },
-
-          distributionSD: {
-            type: Number,
-            computed: '_computeSD(distributionVariance)'
           }
         },
 
@@ -95,33 +72,14 @@
           '_redraw(distributionMean)'
         ],
 
-        _computeVariance(distributionMean) {
-          return distributionMean;
-        },
-
-        _computeSD(distributionVariance) {
-          return Math.sqrt(distributionVariance).toFixed(2);
-        },
-
         _redraw(distributionMean) {
-          let mean = +distributionMean;
-          let data = [];
-          for(let i = 0; true; i++) {
-            let y = window.jStat.poisson.pdf(i, mean);
-            if (i > (2 * mean) && y < 0.001) {
-              break;
-            }
-            data.push({
-              x: i,
-              y: y
-            });
-          }
-
-          this.$.discreteChart.data = data;
+          this.$.discreteChart.data = this.$.statPoisson.createDistributionData();
         },
 
-        openDialog() {
-          this.$.dialog.open();
+        _handleXUpdated() {
+          let xSetting = this.$.xSetting;
+          this.updateChart(this.$.discreteChart, xSetting);
+          this.updateSelectedProbability(this.$.statPoisson, xSetting);
         }
       });
     })();

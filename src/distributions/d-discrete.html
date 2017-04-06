@@ -10,6 +10,11 @@
       }
 
       .bar rect {
+        fill: transparent;
+        stroke: coral;
+      }
+
+      .bar.selected rect {
         fill: coral;
       }
     </style>
@@ -27,7 +32,9 @@
             value: null,
             type: Array,
             observer: '_draw'
-          }
+          },
+
+          _svg: Object
         },
 
         _draw(data) {
@@ -46,10 +53,11 @@
           let width = 960 - margin.left - margin.right;
           let height = 500 - margin.top - margin.bottom;
 
-          let svg = d3.select(this.root).append('svg')
+          this._svg = d3.select(this.root).append('svg')
             .attr('width', width + margin.left + margin.right)
-            .attr('height', height + margin.top + margin.bottom)
-            .append('g')
+            .attr('height', height + margin.top + margin.bottom);
+
+          let mainGroup = this._svg.append('g')
             .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
           // 比例
@@ -64,7 +72,7 @@
             })])
             .range([height, 0]);
 
-          let bar = svg.selectAll('.bar')
+          let bar = mainGroup.selectAll('.bar')
             .data(data)
             .enter()
             .append('g')
@@ -83,18 +91,12 @@
               return y(d.y);
             });
 
-          // let axisX = d3.axisBottom(x);
-          // if (data.length > 40) {
-          //   axisX = axisX.ticks(5);
-          // }
-
-          svg.append('g')
+          mainGroup.append('g')
             .attr('class', 'axis axis--x')
             .attr('transform', 'translate(0,' + height + ')')
             .call(d3.axisBottom(x));
 
-
-          svg.append('g')
+          mainGroup.append('g')
             .attr('class', 'axis axis--y')
             .call(d3.axisLeft(y).ticks(10));
         },
@@ -104,6 +106,52 @@
           if (svg) {
             this.root.removeChild(svg);
           }
+        },
+
+        /**
+         * 选择X轴大于x的分布
+         * @param {Number} x
+         */
+        selectGT(x) {
+          this._svg.selectAll('.bar')
+            .classed('selected', function(d) {
+              if (d.x >= x) {
+                return true;
+              }
+
+              return false;
+            });
+        },
+
+        /**
+         * 选择X轴小于x的分布
+         * @param {Number} x
+         */
+        selectLT(x) {
+          this._svg.selectAll('.bar')
+            .classed('selected', function(d) {
+              if (d.x <= x) {
+                return true;
+              }
+
+              return false;
+            });
+        },
+
+        /**
+         * 选择X轴小于x的分布
+         * @param {Number} x1
+         * @param {Number} x2
+         */
+        selectBetween(x1, x2) {
+          this._svg.selectAll('.bar')
+            .classed('selected', function(d) {
+              if (d.x >= x1 && d.x <= x2) {
+                return true;
+              }
+
+              return false;
+            });
         }
       });
     })();

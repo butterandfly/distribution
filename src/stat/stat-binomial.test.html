@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>stat-poisson test</title>
+
+    <script src="../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../bower_components/web-component-tester/browser.js"></script>
+
+    <link rel="import" href="./stat-binomial.html">
+  </head>
+  <body>
+    <test-fixture id="basic">
+      <template>
+        <stat-binomial></stat-binomial>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('stat-binomial', function() {
+        let element;
+
+        setup(() => {
+          element = fixture('basic');
+        });
+
+        test('Instantiating the element works', function() {
+          assert.equal(element.is, 'stat-binomial');
+        });
+
+        test('"pdf" function', () => {
+          element.p = 0.25;
+          element.n = 5;
+          assert.equal(element.pdf(2).toFixed(2), 0.26);
+        });
+
+        test('"cdf" function', () => {
+          element.p = 0.25;
+          element.n = 5;
+          assert.equal(element.cdf(1).toFixed(2), 0.63);
+        });
+
+        test('"statInfo" property', () => {
+          element.p = 0.25;
+          element.n = 5;
+          assert.equal(element.statInfo.mean, 1.25);
+          assert.equal(element.statInfo.variance, 0.94);
+          assert.equal(element.statInfo.std, 0.97);
+        });
+
+        test('"computeProbability" function', () => {
+          element.p = 0.25;
+          element.n = 5;
+          assert.equal(element.computeProbability('lt', 1).toFixed(2), 0.63);
+          assert.equal(element.computeProbability('gt', 2).toFixed(2), 0.37);
+          assert.equal(element.computeProbability('between', 2, 3).toFixed(2), 0.35);
+        });
+
+        test('"createDistributionData" function', () => {
+          element.p = 0.25;
+          element.n = 5;
+          let data = element.createDistributionData();
+          assert.equal(data.length, 6);
+          assert.equal(data[0].x, 0);
+          assert.equal(data[0].y.toFixed(2), 0.24);
+        });
+      });
+    </script>
+  </body>
+</html>

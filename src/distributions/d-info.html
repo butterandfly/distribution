@@ -17,12 +17,26 @@
       #info>span>span {
         color: slateblue;
       }
+
+      #probability {
+        display: flex;
+        justify-content: center;
+      }
+
+      #probability span{
+        color: coral;
+        font-size: 32px;
+      }
     </style>
 
     <div id="info">
       <span>Mean: <span>[[mean]]</span></span>
       <span>Variance: <span>[[variance]]</span></span>
       <span>Standard Deviation: <span>[[std]]</span></span>
+    </div>
+
+    <div id="probability">
+      <span>[[probability]]</span>
     </div>
   </template>
   <script>
@@ -40,6 +54,10 @@
             type: Number
           },
           variance: {
+            type: Number
+          },
+
+          probability: {
             type: Number
           }
         }

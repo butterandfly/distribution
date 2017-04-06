@@ -1,0 +1,111 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<script src="../../bower_components/jstat/dist/jstat.min.js"></script>
+
+<script>
+  (function() {
+    Polymer({
+      is: 'stat-binomial',
+
+      properties: {
+        n: {
+          value: 10,
+          type: Number,
+          notify: true
+        },
+
+        p: {
+          value: 0.5,
+          type: Number,
+          notify: true
+        },
+
+        /**
+          * 返回分布的统计学信息对象，包括mean，variance，std。
+          */
+        statInfo: {
+          type: Object,
+          computed: '_computeStatInfo(n, p)',
+          notify: true
+        }
+      },
+
+      _computeStatInfo(n, p) {
+        n = +n;
+        p = +p;
+
+        let mean = n * p;
+        let variance = n * p * (1 - p);
+        let std = Math.sqrt(variance);
+
+        return {
+          mean: mean.toFixed(2),
+          variance: variance.toFixed(2),
+          std: std.toFixed(2)
+        };
+      },
+
+      /**
+        * @param {Number} i x轴
+        * @return {Number} y
+        */
+      pdf(i) {
+        n = +this.n;
+        p = +this.p;
+        return window.jStat.binomial.pdf(i, n, p);
+      },
+
+      /**
+        * @param {Number} i x轴
+        * @return {Number} y
+        */
+      cdf(i) {
+        n = +this.n;
+        p = +this.p;
+        return window.jStat.binomial.cdf(i, n, p);
+      },
+
+      /**
+        * @param {String} type 概率范围种类，包括lt, gt, between
+        * @param {Number} x1
+        * @param {Number} x2
+        * @return {Number} probability
+        */
+      computeProbability(type, x1, x2) {
+        switch(type) {
+          case 'lt':
+            return this.cdf(x1);
+          case 'gt':
+            return 1 - this.cdf(x1 - 1);
+          case 'between':
+            if (x1 > x2) {
+              return 0;
+            }
+
+            let left = this.cdf(x1 - 1);
+            let right = 1 - this.cdf(x2);
+            return 1 - left - right;
+          default:
+            return 0;
+        }
+      },
+
+      /**
+       * 构建分布数据。
+       * @return {Array}
+       */
+      createDistributionData() {
+        let n = +this.n;
+        let p = +this.p;
+        let data = [];
+        for(let i = 0; i <= n; i++) {
+          data.push({
+            x: i,
+            y: window.jStat.binomial.pdf(i, n, p)
+          });
+        }
+
+        return data;
+      }
+    });
+  })();
+</script>

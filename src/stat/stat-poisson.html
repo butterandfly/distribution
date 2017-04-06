@@ -1,0 +1,110 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<script src="../../bower_components/jstat/dist/jstat.min.js"></script>
+
+<script>
+  (function() {
+    Polymer({
+      is: 'stat-poisson',
+
+      properties: {
+        lambda: {
+          type: Number,
+          notify: true
+        },
+
+        probability: {
+          type: Number
+        },
+
+        /**
+          * 返回分布的统计学信息对象，包括mean，variance，std。
+          */
+        statInfo: {
+          type: Object,
+          computed: '_computeStatInfo(lambda)',
+          notify: true
+        }
+      },
+
+      _computeStatInfo(lambda) {
+        lambda = +lambda;
+
+        let mean = lambda;
+        let variance = lambda;
+        let std = Math.sqrt(variance);
+
+        return {
+          mean: mean.toFixed(2),
+          variance: variance.toFixed(2),
+          std: std.toFixed(2)
+        };
+      },
+
+      /**
+        * 计算pdf
+        * @param {Number} x x轴
+        * @return {Number} pmf
+        */
+      pdf(x) {
+        let lambda = +this.lambda;
+        return window.jStat.poisson.pdf(x, lambda);
+      },
+
+      /**
+       * 计算cdf
+       * @param {Number} x x轴
+       * @return {Number} 概率
+       */
+      cdf(x) {
+        let lambda = +this.lambda;
+        return window.jStat.poisson.cdf(x, lambda);
+      },
+
+      /**
+        * @param {String} type 概率范围种类，包括lt, gt, between
+        * @param {Number} x1
+        * @param {Number} x2
+        * @return {Number} probability
+        */
+      computeProbability(type, x1, x2) {
+        switch(type) {
+          case 'lt':
+            return this.cdf(x1);
+          case 'gt':
+            return 1 - this.cdf(x1 - 1);
+          case 'between':
+            if (x1 > x2) {
+              return 0;
+            }
+
+            let left = this.cdf(x1 - 1);
+            let right = 1 - this.cdf(x2);
+            return 1 - left - right;
+          default:
+            return 0;
+        }
+      },
+
+      /**
+       * 构建分布数据。
+       * @return {Array}
+       */
+      createDistributionData() {
+        let mean = +this.lambda;
+        let data = [];
+        for(let i = 0; true; i++) {
+          let y = this.pdf(i);
+          if (i > (2 * mean) && y < 0.001) {
+            break;
+          }
+          data.push({
+            x: i,
+            y: y
+          });
+        }
+
+        return data;
+      }
+    });
+  })();
+</script>

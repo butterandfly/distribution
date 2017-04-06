@@ -13,7 +13,10 @@
       .axis line {
           fill: none;
           stroke: #000;
-          shape-rendering: crispEdges;
+      }
+
+      .selected {
+        fill: coral;
       }
 
       .line {
@@ -36,7 +39,9 @@
             value: null,
             type: Array,
             observer: '_draw'
-          }
+          },
+
+          _svg: Object
         },
 
         _draw(data) {
@@ -77,11 +82,15 @@
             .y(function(d) {
                 return scaleY(d.p);
             });
+          this._line = line;
 
           let svg = d3.select(this.root).append('svg')
             .attr('width', width + margin.left + margin.right)
-            .attr('height', height + margin.top + margin.bottom)
-            .append('g')
+            .attr('height', height + margin.top + margin.bottom);
+          this._svg = svg;
+
+          let mainGroup = svg.append('g')
+            .attr('class', 'main')
             .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
           scaleX.domain(d3.extent(data, function(d) {
@@ -91,17 +100,22 @@
               return d.p;
             }));
 
-          svg.append('path')
+          mainGroup.append('path')
             .datum(data)
             .attr('class', 'line')
             .attr('d', line);
 
-          svg.append('g')
+          mainGroup.append('path')
+            .datum([{q: 0, p: 0}])
+            .attr('class', 'selected')
+            .attr('d', line);
+
+          mainGroup.append('g')
             .attr('class', 'x axis')
             .attr('transform', 'translate(0,' + height + ')')
             .call(xAxis);
 
-          svg.append('g')
+          mainGroup.append('g')
             .attr('class', 'y axis')
             .call(yAxis);
         },
@@ -111,6 +125,65 @@
           if (svg) {
             this.root.removeChild(svg);
           }
+        },
+
+        /**
+         * 选择X轴小于x的分布
+         * @param {Number} x
+         */
+        selectLT(x) {
+          // 得到选中的data数组
+          let selectedData = [];
+          this.data.forEach(function(element) {
+            if (element.q <= x) {
+              selectedData.push(element);
+            }
+          });
+
+          selectedData.push({q: selectedData[selectedData.length - 1].q, p: 0});
+          this._select(selectedData);
+        },
+
+        /**
+         * 选择X轴大于x的分布
+         * @param {Number} x
+         */
+        selectGT(x) {
+          // 得到选中的data数组
+          let selectedData = [];
+          this.data.forEach(function(element) {
+            if (element.q >= x) {
+              selectedData.push(element);
+            }
+          });
+          selectedData.splice( 0, 0, {q: selectedData[0].q, p: 0});
+
+          this._select(selectedData);
+        },
+
+
+        /**
+         * 选择间于x1与x2的分布
+         * @param {Number} x1
+         * @param {Number} x2
+         */
+        selectBetween(x1, x2) {
+          let selectedData = [];
+          this.data.forEach(function(element) {
+            if (element.q >= x1 && element.q <= x2) {
+              selectedData.push(element);
+            }
+          });
+          selectedData.splice( 0, 0, {q: selectedData[0].q, p: 0});
+          selectedData.push({q: selectedData[selectedData.length - 1].q, p: 0});
+
+          this._select(selectedData);
+        },
+
+        _select(lineData) {
+          this._svg.select('.selected')
+            .datum(lineData)
+            .attr('d', this._line);
         }
       });
     })();

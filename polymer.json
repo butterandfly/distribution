@@ -2,7 +2,8 @@
   "entrypoint": "index.html",
   "shell": "src/distribution-app/distribution-app.html",
   "sources": [
-    "bower.json"
+    "bower.json",
+    "src/d-katex/fonts/*"
   ],
   "includeDependencies": [
     "bower_components/webcomponentsjs/webcomponents-lite.min.js"

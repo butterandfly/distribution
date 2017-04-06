@@ -79,7 +79,6 @@
       }
     </style>
 
-
     <app-location id="location" path="{{path}}" route="{{route}}"></app-location>
 
     <app-route route="{{route}}"
@@ -87,9 +86,6 @@
         data="{{routeData}}">
     </app-route>
 
-    <!-- <app-toolbar>
-      <paper-icon-button icon="menu" on-tap="toggleMenu"></paper-icon-button>
-    </app-toolbar> -->
     <paper-icon-button id="menuBtn" icon="menu" on-tap="toggleMenu"></paper-icon-button>
 
     <iron-pages attr-for-selected="id" selected="[[routeData.page]]">
@@ -125,27 +121,35 @@
   </template>
 
   <script>
-    Polymer({
+    (function() {
+      Polymer({
+        is: 'distribution-app',
 
-      is: 'distribution-app',
+        properties: {
+          path: {
+            type: String
+          },
 
-      properties: {
-      },
+          _selected: {
+            type: String
+          }
+        },
 
-      observers: [
-        '_redirect(path)'
-      ],
+        observers: [
+          '_redirect(path)'
+        ],
 
-      toggleMenu() {
-        this.$.drawer.toggle();
-      },
+        toggleMenu() {
+          this.$.drawer.toggle();
+        },
 
-      // 对某些url进行重定向。
-      _redirect(path) {
-        if (path === '/' || path === '') {
-          this.path = '/normal';
+        // 对某些url进行重定向。
+        _redirect(path) {
+          if (path === '/' || path === '') {
+            this.path = '/normal';
+          }
         }
-      }
-    });
+      });
+    })();
   </script>
 </dom-module>

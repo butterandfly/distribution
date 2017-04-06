@@ -1,0 +1,76 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+
+<dom-module id="d-x-setting">
+  <template>
+    <style>
+      :host {
+        display: flex;
+      }
+
+      paper-input {
+        margin-left: 64px;
+      }
+    </style>
+    
+    <paper-dropdown-menu label="范围种类">
+      <paper-listbox class="dropdown-content" attr-for-selected="data-type" selected="{{rangeType}}">
+        <paper-item data-type="lt">P(x <= x1)</paper-item>
+        <paper-item data-type="gt">P(x >= x1)</paper-item>
+        <paper-item data-type="between">P(x1 <= x <= x2)</paper-item>
+      </paper-listbox>
+    </paper-dropdown-menu>
+    <paper-input label="x1" value="{{x1}}" type="number"></paper-input>
+    <paper-input hidden$=[[!isBetween]] label="x2" value="{{x2}}" type="number"></paper-input>
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'd-x-setting',
+        properties: {
+          x1: {
+            type: Number,
+            notify: true,
+            observer: '_updated'
+          },
+
+          x2: {
+            type: Number,
+            notify: true,
+            observer: '_updated'
+          },
+
+          /**
+           * 'lt', 'gt', 'between'的其中一种。
+           */
+          rangeType: {
+            value: 'lt',
+            type: String,
+            notify: true,
+            observer: '_updated'
+          },
+
+          isBetween: {
+            type: Boolean,
+            computed: '_computeIsBetween(rangeType)'
+          }
+        },
+
+        _computeIsBetween(rangeType) {
+          if (rangeType === 'between') {
+            return true;
+          }
+          return false;
+        },
+
+        _updated() {
+          this.fire('updated', null, {bubbles: false});
+        }
+      });
+    })();
+  </script>
+</dom-module>

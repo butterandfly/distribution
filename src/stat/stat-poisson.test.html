@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>stat-poisson test</title>
+
+    <script src="../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../bower_components/web-component-tester/browser.js"></script>
+
+    <link rel="import" href="./stat-poisson.html">
+  </head>
+  <body>
+    <test-fixture id="basic">
+      <template>
+        <stat-poisson></stat-poisson>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('stat-poisson', function() {
+        let element;
+
+        setup(() => {
+          element = fixture('basic');
+        });
+
+        test('Instantiating the element works', function() {
+          assert.equal(element.is, 'stat-poisson');
+        });
+
+        test('"pdf" function', () => {
+          element.lambda = 2;
+          assert.equal(element.pdf(3).toFixed(2), 0.18);
+        });
+
+        test('"cdf" function', () => {
+          element.lambda = 1;
+          assert.equal(element.cdf(0).toFixed(2), 0.37);
+        });
+
+        test('"statInfo" property', () => {
+          element.lambda = 3;
+          assert.equal(element.statInfo.mean, 3);
+          assert.equal(element.statInfo.variance, 3);
+          assert.equal(element.statInfo.std, 1.73);
+        });
+
+        test('"computeProbability" function', () => {
+          element.lambda = 3;
+          assert.equal(element.computeProbability('lt', 3).toFixed(2), 0.65);
+          assert.equal(element.computeProbability('gt', 3).toFixed(2), 0.58);
+          assert.equal(element.computeProbability('between', 3, 4).toFixed(2), 0.39);
+        });
+
+        test('"createDistributionData" function', () => {
+          element.lambda = 3;
+          let data = element.createDistributionData();
+          assert.equal(data[0].x, 0);
+          assert.equal(data[0].y.toFixed(2), 0.05);
+        });
+      });
+    </script>
+  </body>
+</html>

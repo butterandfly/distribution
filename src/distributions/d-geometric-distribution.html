@@ -3,40 +3,25 @@
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 
-<script src="../../bower_components/jstat/dist/jstat.min.js"></script>
-
 <link rel="import" href="./d-discrete.html">
 <link rel="import" href="./d-info.html">
 <link rel="import" href="../d-info-dialog.html">
 <link rel="import" href="../d-katex/d-katex.html">
-<link rel="import" href="./reference-style.html">
+<link rel="import" href="./distribution-style.html">
+<link rel="import" href="../stat/stat-geometric.html">
+<link rel="import" href="./d-x-setting.html">
+<link rel="import" href="./d-distribution-behavior.html">
 
 <dom-module id="d-geometric-distribution">
   <template>
-    <style include="reference-style"></style>
+    <style include="distribution-style"></style>
     <style>
       :host {
         display: block;
       }
-
-      #settings {
-        width: 500px;
-        display: flex;
-        justify-content: space-around;
-        margin-bottom: 24px;
-      }
-
-      app-toolbar {
-        background: coral;
-        color: white;
-      }
-
-      #container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
     </style>
+
+    <stat-geometric id="statGeometric" p="[[distributionP]]" stat-info="{{statInfo}}"></stat-geometric>
 
     <app-toolbar>
       <div main-title spacer>几何分布（Geometric Distribution）</div>
@@ -47,7 +32,8 @@
       <div id="settings">
         <paper-input label="成功概率（p）" type="number" value="{{distributionP}}"></paper-input>
       </div>
-      <d-info mean="[[distributionMean]]" std="[[distributionSD]]" variance="[[distributionVariance]]"></d-info>
+      <d-x-setting x1="0" x2="-1" id="xSetting" on-updated="_handleXUpdated"></d-x-setting>
+      <d-info mean="[[statInfo.mean]]" std="[[statInfo.std]]" variance="[[statInfo.variance]]" probability="[[selectedProbability]]"></d-info>
       <d-discrete id="discreteChart"></d-discrete>
     </div>
 
@@ -68,41 +54,15 @@
   </template>
   <script>
     (function() {
-      'use strict';
-
-      /**
-       * 计算pdf
-       * @param {Number} p 成功概率
-       * @param {Number} x
-       * @return {Number} pdf
-       */
-      function geomPdf(p, x) {
-        return p * Math.pow(1 - p, x - 1);
-      }
-
       Polymer({
         is: 'd-geometric-distribution',
+        behaviors: [Polymer.DDistributionBehavior],
 
         properties: {
           distributionP: {
             value: 0.5,
             type: Number,
             notify: true
-          },
-
-          distributionMean: {
-            type: Number,
-            computed: '_computeMean(distributionP)'
-          },
-
-          distributionVariance: {
-            type: Number,
-            computed: '_computeVariance(distributionP)'
-          },
-
-          distributionSD: {
-            type: Number,
-            computed: '_computeSD(distributionVariance)'
           }
         },
 
@@ -110,43 +70,18 @@
           '_redraw(distributionP)'
         ],
 
-        _computeMean(distributionP) {
-          let result = (1 - distributionP) / distributionP;
-          return result.toFixed(2);
-        },
-
-        _computeVariance(distributionP) {
-          let result = (1 - distributionP) / Math.pow(distributionP, 2);
-          return result.toFixed(2);
-        },
-
-        _computeSD(distributionVariance) {
-          return Math.sqrt(distributionVariance).toFixed(2);
-        },
-
         _redraw(distributionP) {
           if (!distributionP) {
             return;
           }
 
-          let p = +distributionP;
-          let data = [];
-          for(let i = 1; true; i++) {
-            let y = geomPdf(p, i);
-            if (y < 0.001) {
-              break;
-            }
-            data.push({
-              x: i,
-              y: y
-            });
-          }
-
-          this.$.discreteChart.data = data;
+          this.$.discreteChart.data = this.$.statGeometric.createDistributionData();
         },
 
-        openDialog() {
-          this.$.dialog.open();
+        _handleXUpdated() {
+          let xSetting = this.$.xSetting;
+          this.updateChart(this.$.discreteChart, xSetting);
+          this.updateSelectedProbability(this.$.statGeometric, xSetting);
         }
       });
     })();

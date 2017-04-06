@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>stat-poisson test</title>
+
+    <script src="../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../bower_components/web-component-tester/browser.js"></script>
+
+    <link rel="import" href="./stat-normal.html">
+  </head>
+  <body>
+    <test-fixture id="basic">
+      <template>
+        <stat-normal></stat-normal>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('stat-normal', function() {
+        let element;
+
+        setup(() => {
+          element = fixture('basic');
+        });
+
+        test('Instantiating the element works', function() {
+          assert.equal(element.is, 'stat-normal');
+        });
+
+        test('"pdf" function', () => {
+          element.mean = 0;
+          element.std = 1;
+          assert.equal(element.pdf(0).toFixed(2), 0.40);
+        });
+
+        test('"cdf" function', () => {
+          element.mean = 0;
+          element.std = 1;
+          assert.equal(element.cdf(0).toFixed(2), 0.50);
+        });
+
+        test('"statInfo" property', () => {
+          element.mean = 0;
+          element.std = 2;
+          assert.equal(element.statInfo.mean, 0);
+          assert.equal(element.statInfo.variance, 4);
+          assert.equal(element.statInfo.std, 2);
+        });
+
+        test('"computeProbability" function', () => {
+          element.mean = 0;
+          element.std = 1;
+          assert.equal(element.computeProbability('lt', 0).toFixed(2), 0.50);
+          assert.equal(element.computeProbability('gt', 0).toFixed(2), 0.50);
+          assert.equal(element.computeProbability('between', -1, 1).toFixed(2), 0.68);
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -2,50 +2,55 @@
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 
-<script src="../../bower_components/jstat/dist/jstat.min.js"></script>
-
 <link rel="import" href="./d-continuous.html">
 <link rel="import" href="./d-info.html">
+<link rel="import" href="../d-info-dialog.html">
+<link rel="import" href="../d-katex/d-katex.html">
+<link rel="import" href="./distribution-style.html">
+<link rel="import" href="../stat/stat-normal.html">
+<link rel="import" href="./d-distribution-behavior.html">
+<link rel="import" href="./d-x-setting.html">
+
 
 <dom-module id="d-normal-distribution">
   <template>
+    <style include="distribution-style"></style>
     <style>
     :host {
       display: block;
     }
-
-    #settings {
-      width: 500px;
-      display: flex;
-      justify-content: space-around;
-      margin-bottom: 24px;
-    }
-
-    app-toolbar {
-      background: coral;
-      color: white;
-    }
-
-    #container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
     </style>
 
+  <stat-normal id="statNormal" mean="[[mean]]" std="[[std]]" stat-info="{{statInfo}}"></stat-normal>
   <app-toolbar>
     <div main-title spacer>正态分布（Normal Distribution）</div>
-    <paper-icon-button icon="info"></paper-icon-button>
+    <paper-icon-button icon="info" on-tap="openDialog"></paper-icon-button>
   </app-toolbar>
 
   <div id="container">
     <div id="settings">
-      <paper-input label="Mean" type="number" value="{{distributionMean}}"></paper-input>
-      <paper-input label="Standard Deviation" type="number" value="{{distributionSD}}"></paper-input>
+      <paper-input label="Mean" type="number" value="{{mean}}"></paper-input>
+      <paper-input label="Standard Deviation" type="number" value="{{std}}"></paper-input>
     </div>
-    <d-info mean="[[distributionMean]]" std="[[distributionSD]]" variance="[[distributionVariance]]"></d-info>
+    <d-x-setting x1="0" x2="1" id="xSetting" on-updated="_handleXUpdated"></d-x-setting>
+    <d-info mean="[[statInfo.mean]]" std="[[statInfo.std]]" variance="[[statInfo.variance]]" probability="[[selectedProbability]]"></d-info>
     <d-continuous id="continuous"></d-continuous>
   </div>
+
+  <d-info-dialog id="dialog">
+    <div id="reference">
+      <h2 class="title">正态分布
+        <a href="https://zh.wikipedia.org/wiki/%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83" class="wiki">维基百科</a>
+      </h2>
+      <p>正态分布（Normal distribution）又名高斯分布，一个非常普遍、重要的连续性概率分布。</p>
+      <h3>Mean:</h3>
+      <d-katex tex="\mu = E(X)"></d-katex>
+      <h3>Variance:</h3>
+      <d-katex tex="\sigma^2 = Var(X)"></d-katex>
+      <h3>PDF:</h3>
+      <d-katex tex="f(x) = \frac {1} {\sqrt{2\pi\sigma^2} } e^{- \frac {1} {2\sigma^2} (x-\mu)^2} "></d-katex>
+    </div>
+  </d-info-dialog>
   </template>
 
   <script>
@@ -54,58 +59,34 @@
 
       Polymer({
         is: 'd-normal-distribution',
+        behaviors: [Polymer.DDistributionBehavior],
+
         properties: {
-          distributionMean: {
+          mean: {
             value: 0,
             type: Number,
             notify: true
           },
 
-          distributionSD: {
+          std: {
             value: 1,
             type: Number,
             notify: true
-          },
-
-          distributionVariance: {
-            type: Number,
-            computed: '_computeVariance(distributionSD)'
           }
         },
 
         observers: [
-          '_redraw(distributionMean, distributionSD)'
+          '_redraw(mean, std)'
         ],
 
-        _computeVariance(distributionSD) {
-          return distributionSD * distributionSD;
-        },
-
         _redraw(distributionMean, distributionSD) {
-          this.$.continuous.data = this._createData(distributionMean, distributionSD);
+          this.$.continuous.data = this.$.statNormal.createDistributionData();
         },
 
-        _createData(mean, std) {
-          mean = +mean;
-          std = +std;
-          let data = [];
-
-          for (let i = 0; i < 100000; i++) {
-            let normal = window.jStat.normal(mean, std);
-            let q = normal.sample();
-            let p = normal.pdf(q);
-            let el = {
-                'q': q,
-                'p': p
-            };
-            data.push(el);
-          };
-
-          data.sort(function(x, y) {
-              return x.q - y.q;
-          });
-
-          return data;
+        _handleXUpdated() {
+          let xSetting = this.$.xSetting;
+          this.updateChart(this.$.continuous, xSetting);
+          this.updateSelectedProbability(this.$.statNormal, xSetting);
         }
       });
     })();
