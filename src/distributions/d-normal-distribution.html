@@ -81,6 +81,7 @@
 
         _redraw(distributionMean, distributionSD) {
           this.$.continuous.data = this.$.statNormal.createDistributionData();
+          this._handleXUpdated();
         },
 
         _handleXUpdated() {

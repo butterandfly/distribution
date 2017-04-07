@@ -33,7 +33,7 @@
         <paper-input label="总数n" type="number" value="{{distributionN}}"></paper-input>
         <paper-input label="成功概率p" type="number" value="{{distributionP}}"></paper-input>
       </div>
-      <d-x-setting x1="-1" x2="0" id="xSetting" on-updated="_handleXUpdated"></d-x-setting>
+      <d-x-setting x1="1" x2="0" id="xSetting" on-updated="_handleXUpdated"></d-x-setting>
       <d-info mean="[[statInfo.mean]]" std="[[statInfo.std]]" variance="[[statInfo.variance]]" probability="[[selectedProbability]]"></d-info>
       <d-discrete id="discreteChart"></d-discrete>
     </div>
@@ -81,6 +81,7 @@
 
         _redraw(distributionN, distributionP) {
           this.$.discreteChart.data = this.$.statBinomial.createDistributionData();
+          this._handleXUpdated();
         },
 
         _handleXUpdated() {

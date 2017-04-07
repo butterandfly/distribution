@@ -32,7 +32,7 @@
       <div id="settings">
         <paper-input label="成功概率（p）" type="number" value="{{distributionP}}"></paper-input>
       </div>
-      <d-x-setting x1="0" x2="-1" id="xSetting" on-updated="_handleXUpdated"></d-x-setting>
+      <d-x-setting x1="1" x2="-1" id="xSetting" on-updated="_handleXUpdated"></d-x-setting>
       <d-info mean="[[statInfo.mean]]" std="[[statInfo.std]]" variance="[[statInfo.variance]]" probability="[[selectedProbability]]"></d-info>
       <d-discrete id="discreteChart"></d-discrete>
     </div>
@@ -76,6 +76,7 @@
           }
 
           this.$.discreteChart.data = this.$.statGeometric.createDistributionData();
+          this._handleXUpdated();
         },
 
         _handleXUpdated() {
