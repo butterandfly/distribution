@@ -6,6 +6,7 @@
     "src/d-katex/fonts/*"
   ],
   "includeDependencies": [
-    "bower_components/webcomponentsjs/webcomponents-lite.min.js"
+    "bower_components/webcomponentsjs/webcomponents-lite.min.js",
+    "bower_components/font-roboto/**/*"
   ]
 }

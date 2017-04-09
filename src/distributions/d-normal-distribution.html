@@ -30,7 +30,12 @@
   <div id="container">
     <div id="settings">
       <paper-input label="Mean" type="number" value="{{mean}}"></paper-input>
-      <paper-input label="Standard Deviation" type="number" value="{{std}}"></paper-input>
+      <paper-input id="stdInput" 
+                   label="Standard Deviation" 
+                   type="number"
+                   required
+                   value="{{std}}" 
+                   error-message="标准差必须为正数"></paper-input>
     </div>
     <d-x-setting x1="0" x2="1" id="xSetting" on-updated="_handleXUpdated"></d-x-setting>
     <d-info mean="[[statInfo.mean]]" std="[[statInfo.std]]" variance="[[statInfo.variance]]" probability="[[selectedProbability]]"></d-info>
@@ -79,7 +84,14 @@
           '_redraw(mean, std)'
         ],
 
-        _redraw(distributionMean, distributionSD) {
+        _redraw(mean, std) {
+          std = (+std);
+          if ( std <= 0) {
+            this.$.stdInput.invalid = true;
+            return;
+          }
+
+          this.$.stdInput.invalid = false;
           this.$.continuous.data = this.$.statNormal.createDistributionData();
           this._handleXUpdated();
         },

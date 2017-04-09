@@ -27,12 +27,12 @@
         } else {
           // polyfill web components
           let e = document.createElement('script');
-          e.src = '/bower_components/webcomponentsjs/webcomponents-lite.min.js';
+          e.src = './bower_components/webcomponentsjs/webcomponents-lite.min.js';
           document.head.appendChild(e);
         }
       })();
     </script>
-    <link rel="import" href="/src/distribution-app/distribution-app.html">
+    <link rel="import" href="./src/distribution-app/distribution-app.html">
   </head>
   <body>
     <distribution-app></distribution-app>

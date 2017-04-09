@@ -19,7 +19,7 @@
        * 选中范围的概率。
        */
       selectedProbability: {
-        type: Number
+        type: String
       }
     },
 
@@ -53,7 +53,7 @@
     },
 
     updateSelectedProbability(statElement, xSettingElement) {
-      this.selectedProbability = statElement.computeProbability(xSettingElement.rangeType, xSettingElement.x1, xSettingElement.x2);
+      this.selectedProbability = statElement.computeProbability(xSettingElement.rangeType, xSettingElement.x1, xSettingElement.x2).toFixed(3);
     },
 
     /**

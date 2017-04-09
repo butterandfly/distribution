@@ -49,8 +49,8 @@
         * @return {Number} y
         */
       pdf(i) {
-        n = +this.n;
-        p = +this.p;
+        let n = +this.n;
+        let p = +this.p;
         return window.jStat.binomial.pdf(i, n, p);
       },
 
@@ -59,8 +59,8 @@
         * @return {Number} y
         */
       cdf(i) {
-        n = +this.n;
-        p = +this.p;
+        let n = +this.n;
+        let p = +this.p;
         return window.jStat.binomial.cdf(i, n, p);
       },
 

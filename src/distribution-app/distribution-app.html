@@ -17,6 +17,7 @@
     <style>
       :host {
         display: block;
+        --paper-input-container-focus-color: coral;
       }
 
       app-drawer {
@@ -79,7 +80,7 @@
       }
     </style>
 
-    <app-location id="location" path="{{path}}" route="{{route}}"></app-location>
+    <app-location id="location" path="{{path}}" route="{{route}}" use-hash-as-path></app-location>
 
     <app-route route="{{route}}"
         pattern="/:page"
@@ -95,24 +96,24 @@
       <d-poisson-distribution id="poisson"></d-poisson-distribution>
     </iron-pages>
 
-    <app-drawer id="drawer">
-      <iron-selector attr-for-selected="data-path" selected="[[_selected]]" id="selector">
+    <app-drawer id="drawer" no-focus-trap>
+      <iron-selector attr-for-selected="data-path" selected="[[path]]" id="selector">
         <h3>离散分布</h3>
-        <a href="/binomail" data-path="/binomail" on-tap="toggleMenu">
+        <a href="#/binomail" data-path="/binomail" on-tap="toggleMenu">
           <div class="border-left"></div>
           <span>二项分布</span>
         </a>
-        <a href="/geometric" data-path="/geometric" on-tap="toggleMenu">
+        <a href="#/geometric" data-path="/geometric" on-tap="toggleMenu">
           <div class="border-left"></div>
           <span>几何分布</span>
         </a>
-        <a href="/poisson" data-path="/poisson" on-tap="toggleMenu">
+        <a href="#/poisson" data-path="/poisson" on-tap="toggleMenu">
           <div class="border-left"></div>
           <span>泊松分布</span>
         </a>
 
         <h3>连续分布</h3>
-        <a href="/normal" data-path="/normal" on-tap="toggleMenu">
+        <a href="#/normal" data-path="/normal" on-tap="toggleMenu">
           <div class="border-left"></div>
           <span>正态分布</span>
         </a>
@@ -127,10 +128,6 @@
 
         properties: {
           path: {
-            type: String
-          },
-
-          _selected: {
             type: String
           }
         },
