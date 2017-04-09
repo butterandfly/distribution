@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 # 配置参数
-ORIGIN_URL="git@github.com:butterandfly/distribution.gitt"
+ORIGIN_URL="git@github.com:butterandfly/distribution.git"
 LOCAL_DIR="build"
 
 cd $LOCAL_DIR
