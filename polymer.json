@@ -2,6 +2,7 @@
   "entrypoint": "index.html",
   "shell": "src/distribution-app/distribution-app.html",
   "sources": [
+    "images/**/*",
     "bower.json",
     "src/d-katex/fonts/*"
   ],
