@@ -117,3 +117,22 @@ gulp.task('build', ['clean'], function() {
   .pipe(project.bundler())
   .pipe(gulp.dest('build'));
 });
+
+gulp.task('swbuild', ['build'], function() {
+  const addServiceWorker = require('polymer-build').addServiceWorker;
+  return addServiceWorker({
+    buildRoot: 'build/',
+    project: project,
+    bundled: true,
+    swPrecacheConfig: {
+      navigateFallback: 'index.html',
+      // 包含除了index.html及bundle外的需要的所有文件
+      staticFileGlobs: [
+        'images/**/*',
+        'src/d-katex/fonts/*',
+        'bower_components/webcomponentsjs/webcomponents-lite.min.js',
+        'bower_components/font-roboto/**/*'
+      ]
+    }
+  });
+});

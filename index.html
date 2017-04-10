@@ -92,7 +92,7 @@
     </style>
 
     <!-- See https://goo.gl/OOhYW5 -->
-    <!-- <link rel="manifest" href="/manifest.json"> -->
+    <link rel="manifest" href="/manifest.json"> 
 
     <script>
       // setup Polymer options
@@ -171,6 +171,38 @@
 
         link.addEventListener('load', onImportLoaded);
       })();
+    </script>
+    <script>
+      // Register server worker.
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('service-worker.js').then(function(reg) {
+            reg.onupdatefound = function() {
+              let installingWorker = reg.installing;
+              installingWorker.onstatechange = function() {
+                switch (installingWorker.state) {
+                  case 'installed':
+                    if (navigator.serviceWorker.controller) {
+                      window.DistributionAppUpdated = true;
+                      window.dispatchEvent(new CustomEvent('distribution-app-updated'));
+                      console.log('New or updated content is available.');
+                    } else {
+                      window.DistributionAppCached = true;
+                      window.dispatchEvent(new CustomEvent('distribution-app-cached'));
+                      console.log('Content is now available offline!');
+                    }
+                    break;
+                  case 'redundant':
+                    console.error('The installing service worker became redundant.');
+                    break;
+                }
+              };
+            };
+          }).catch(function(e) {
+            console.error('Error during service worker registration:', e);
+          });
+        });
+      }
     </script>
   </body>
 </html>

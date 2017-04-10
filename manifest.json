@@ -1,6 +1,6 @@
 {
-  "name": "distribution",
-  "short_name": "distribution",
-  "start_url": "/",
+  "name": "Distribution",
+  "short_name": "Distribution",
+  "start_url": "/distribution/index.html",
   "display": "standalone"
 }

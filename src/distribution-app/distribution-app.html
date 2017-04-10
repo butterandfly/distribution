@@ -6,6 +6,7 @@
 <link rel="import" href="../../bower_components/app-route/app-location.html">
 <link rel="import" href="../../bower_components/app-route/app-route.html">
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 
 <link rel="import" href="../distributions/d-normal-distribution.html">
 <link rel="import" href="../distributions/d-binomial-distribution.html">
@@ -119,6 +120,9 @@
         </a>
       </iron-selector>
     </app-drawer>
+    
+    <paper-toast id="toast" duration="5000">
+    </paper-toast>
   </template>
 
   <script>
@@ -136,6 +140,24 @@
           '_redirect(path)'
         ],
 
+        attached() {
+          if (window.DistributionAppCached) {
+            this._toast('cached');
+          } else {
+            window.addEventListener('distribution-app-cached', () => {
+              this._toast('cached');
+            });
+          }
+
+          if (window.DistributionAppUpdated) {
+            this._toast('updated');
+          } else {
+            window.addEventListener('distribution-app-updated', () => {
+              this._toast('updated');
+            });
+          }
+        },
+
         toggleMenu() {
           this.$.drawer.toggle();
         },
@@ -145,6 +167,20 @@
           if (path === '/' || path === '') {
             this.path = '/normal';
           }
+        },
+
+        _toast(type) {
+          let toast = this.$.toast;
+          switch (type) {
+            case 'updated':
+              toast.text = '有新版本可用，刷新加载';
+              break;
+            case 'cached':
+              toast.text = '应用已可离线使用';
+              break;
+          }
+
+          this.$.toast.open();
         }
       });
     })();
