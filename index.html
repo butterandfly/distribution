@@ -185,11 +185,9 @@
                     if (navigator.serviceWorker.controller) {
                       window.DistributionAppUpdated = true;
                       window.dispatchEvent(new CustomEvent('distribution-app-updated'));
-                      console.log('New or updated content is available.');
                     } else {
                       window.DistributionAppCached = true;
                       window.dispatchEvent(new CustomEvent('distribution-app-cached'));
-                      console.log('Content is now available offline!');
                     }
                     break;
                   case 'redundant':

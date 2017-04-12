@@ -4,6 +4,7 @@
   "sources": [
     "images/**/*",
     "bower.json",
+    "manifest.json",
     "src/d-katex/fonts/*"
   ],
   "includeDependencies": [

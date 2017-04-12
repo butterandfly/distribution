@@ -131,7 +131,8 @@ gulp.task('swbuild', ['build'], function() {
         'images/**/*',
         'src/d-katex/fonts/*',
         'bower_components/webcomponentsjs/webcomponents-lite.min.js',
-        'bower_components/font-roboto/**/*'
+        'bower_components/font-roboto/**/*.html',
+        'bower_components/font-roboto/**/*.ttf'
       ]
     }
   });
