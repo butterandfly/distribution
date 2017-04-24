@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <script src="../../bower_components/d3/d3.min.js"></script>
 
@@ -31,18 +31,19 @@
     (function() {
       let d3 = window.d3;
 
-      Polymer({
-        is: 'd-continuous',
+      class DContinuous extends Polymer.Element {
+        static get is() { return 'd-continuous'; }
+        static get properties() {
+          return {
+            data: {
+              value: null,
+              type: Array,
+              observer: '_draw'
+            },
 
-        properties: {
-          data: {
-            value: null,
-            type: Array,
-            observer: '_draw'
-          },
-
-          _svg: Object
-        },
+            _svg: Object
+          };
+        }
 
         _draw(data) {
           if (!data) {
@@ -57,8 +58,16 @@
             bottom: 30,
             left: 50
           };
-          let width = 960 - margin.left - margin.right;
-          let height = 500 - margin.top - margin.bottom;
+
+          let windowWidth = window.innerWidth;
+          let windowHeight = 300;
+          if (windowWidth > 960) {
+            windowWidth = 960;
+            windowHeight = 500;
+          }
+
+          let width = windowWidth - margin.left - margin.right;
+          let height = windowHeight - margin.top - margin.bottom;
 
           let scaleX = d3.scaleLinear()
             .range([0, width]);
@@ -118,14 +127,14 @@
           mainGroup.append('g')
             .attr('class', 'y axis')
             .call(yAxis);
-        },
+        }
 
         _cleanSvg() {
           let svg = this.root.querySelector('svg');
           if (svg) {
             this.root.removeChild(svg);
           }
-        },
+        }
 
         /**
          * 选择X轴小于x的分布
@@ -142,7 +151,7 @@
 
           selectedData.push({q: selectedData[selectedData.length - 1].q, p: 0});
           this._select(selectedData);
-        },
+        }
 
         /**
          * 选择X轴大于x的分布
@@ -159,7 +168,7 @@
           selectedData.splice( 0, 0, {q: selectedData[0].q, p: 0});
 
           this._select(selectedData);
-        },
+        }
 
 
         /**
@@ -178,14 +187,15 @@
           selectedData.push({q: selectedData[selectedData.length - 1].q, p: 0});
 
           this._select(selectedData);
-        },
+        }
 
         _select(lineData) {
           this._svg.select('.selected')
             .datum(lineData)
             .attr('d', this._line);
         }
-      });
+      }
+      customElements.define(DContinuous.is, DContinuous);
     })();
   </script>
 </dom-module>

@@ -20,7 +20,9 @@
         "comma-dangle": [2, "never"],
         "quote-props": ["error", "consistent"],
         "no-console": ["error", {"allow": ["warn", "error"]}],
-        "dot-notation": ["error", { "allowPattern": "^[a-z]+(_[a-z]+)+$" }]
+        "dot-notation": ["error", { "allowPattern": "^[a-z]+(_[a-z]+)+$" }],
+        "require-jsdoc": 0,
+        "brace-style": ["error", "1tbs", { "allowSingleLine": true }]
     },
     "globals": {
       "Polymer": true,

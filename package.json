@@ -21,7 +21,8 @@
     "gulp-ignore": "^2.0.2",
     "gulp-minifier": "^0.2.1",
     "gulp-uglify": "^2.1.2",
-    "sw-precache": "^5.1.0"
+    "sw-precache": "^5.1.0",
+    "web-component-tester": "^5.0.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

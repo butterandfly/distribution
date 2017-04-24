@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/app-layout/app-drawer/app-drawer.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
@@ -7,6 +7,8 @@
 <link rel="import" href="../../bower_components/app-route/app-route.html">
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 
 <link rel="import" href="../distributions/d-normal-distribution.html">
 <link rel="import" href="../distributions/d-binomial-distribution.html">
@@ -23,14 +25,6 @@
 
       app-drawer {
         z-index: 1;
-      }
-
-      #menuBtn {
-        position: absolute;
-        left: 24px;
-        top: 12px;
-        z-index: 1;
-        color: white;
       }
 
       #selector {
@@ -79,6 +73,17 @@
       a:not([class="iron-selected"]):hover{
         background-color: #ddd;
       }
+
+      app-toolbar {
+        background: coral;
+        color: white;
+        display: flex;
+        align-items: center;
+      }
+
+      app-toolbar div {
+        flex: 1;
+      }
     </style>
 
     <app-location id="location" path="{{path}}" route="{{route}}" use-hash-as-path></app-location>
@@ -88,7 +93,13 @@
         data="{{routeData}}">
     </app-route>
 
-    <paper-icon-button id="menuBtn" icon="menu" on-tap="toggleMenu"></paper-icon-button>
+    <app-header reveals>
+      <app-toolbar>
+        <paper-icon-button id="menuBtn" icon="menu" on-tap="toggleMenu"></paper-icon-button>
+        <div id="appTitle" main-title></div>
+        <paper-icon-button icon="info" on-tap="openDialog"></paper-icon-button>
+      </app-toolbar>
+    </app-header>
 
     <iron-pages attr-for-selected="id" selected="[[routeData.page]]">
       <d-binomial-distribution id="binomail"></d-binomial-distribution>
@@ -127,47 +138,86 @@
 
   <script>
     (function() {
-      Polymer({
-        is: 'distribution-app',
+      class DistributionApp extends Polymer.Element {
+        static get is() { return 'distribution-app'; }
+        static get properties() {
+          return {
+            path: {
+              type: String
+            }
+          };
+        }
 
-        properties: {
-          path: {
-            type: String
-          }
-        },
+        static get observers() {
+          return [
+            '_redirect(path)',
+            '_observePage(routeData.page)'
+          ];
+        }
 
-        observers: [
-          '_redirect(path)'
-        ],
+        ready() {
+          super.ready();
 
-        attached() {
-          if (window.DistributionAppCached) {
-            this._toast('cached');
-          } else {
-            window.addEventListener('distribution-app-cached', () => {
-              this._toast('cached');
+          let app = this;
+          // Register server worker.
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js').then(function(reg) {
+              reg.onupdatefound = function() {
+                let installingWorker = reg.installing;
+                installingWorker.onstatechange = function() {
+                  switch (installingWorker.state) {
+                    case 'installed':
+                      if (navigator.serviceWorker.controller) {
+                        app._toast('updated');
+                      } else {
+                        app._toast('cached');
+                      }
+                      break;
+                    case 'redundant':
+                      console.error('The installing service worker became redundant.');
+                      break;
+                  }
+                };
+              };
+            }).catch(function(e) {
+              console.error('Error during service worker registration:', e);
             });
           }
-
-          if (window.DistributionAppUpdated) {
-            this._toast('updated');
-          } else {
-            window.addEventListener('distribution-app-updated', () => {
-              this._toast('updated');
-            });
-          }
-        },
+        }
 
         toggleMenu() {
           this.$.drawer.toggle();
-        },
+        }
+
+        openDialog() {
+          this.shadowRoot.querySelector('iron-pages .iron-selected').openDialog();
+        }
 
         // 对某些url进行重定向。
         _redirect(path) {
           if (path === '/' || path === '') {
             this.path = '/normal';
           }
-        },
+        }
+
+        _observePage(page) {
+          let title;
+          switch (page) {
+            case 'binomail':
+              title = '二项分布';
+              break;
+            case 'geometric':
+              title = '几何分布';
+              break;
+            case 'poisson':
+              title = '泊松分布';
+              break;
+            case 'normal':
+              title = '正态分布';
+              break;
+          }
+          this.$.appTitle.textContent = title;
+        }
 
         _toast(type) {
           let toast = this.$.toast;
@@ -182,7 +232,9 @@
 
           this.$.toast.open();
         }
-      });
+      }
+
+      window.customElements.define(DistributionApp.is, DistributionApp);
     })();
   </script>
 </dom-module>

@@ -7,8 +7,11 @@
     "manifest.json",
     "src/d-katex/fonts/*"
   ],
-  "includeDependencies": [
-    "bower_components/webcomponentsjs/webcomponents-lite.min.js",
+  "extraDependencies": [
+    "bower_components/webcomponentsjs/webcomponents-*.js",
     "bower_components/font-roboto/**/*"
-  ]
+  ],
+  "lint": {
+    "rules": ["polymer-2"]
+  }
 }

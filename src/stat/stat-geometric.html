@@ -1,31 +1,32 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <script src="../../bower_components/jstat/dist/jstat.min.js"></script>
 
 <script>
   (function() {
-    Polymer({
-      is: 'stat-geometric',
+    class StatGeometric extends Polymer.Element {
+      static get is() { return 'stat-geometric'; }
+      static get properties() {
+        return {
+          p: {
+            value: 0.5,
+            type: Number,
+            notify: true
+          },
 
-      properties: {
-        p: {
-          value: 0.5,
-          type: Number,
-          notify: true
-        },
+          probability: {
+            type: Number
+          },
 
-        probability: {
-          type: Number
-        },
-
-        /**
-          * 返回分布的统计学信息对象，包括mean，variance，std。
-          */
-        statInfo: {
-          type: Object,
-          computed: '_computeStatInfo(p)',
-          notify: true
-        }
-      },
+          /**
+            * 返回分布的统计学信息对象，包括mean，variance，std。
+            */
+          statInfo: {
+            type: Object,
+            computed: '_computeStatInfo(p)',
+            notify: true
+          }
+        };
+      }
 
       _computeStatInfo(p) {
         p = +p;
@@ -39,7 +40,7 @@
           variance: variance.toFixed(2),
           std: std.toFixed(2)
         };
-      },
+      }
 
       /**
         * 计算pdf
@@ -49,7 +50,7 @@
       pdf(k) {
         let p = +this.p;
         return p * Math.pow(1 - p, k - 1);
-      },
+      }
 
       /**
        * 计算pdf
@@ -61,7 +62,7 @@
         let q = 1 - p;
 
         return 1 - Math.pow(q, k);
-      },
+      }
 
       /**
         * @param {String} type 概率范围种类，包括lt, gt, between
@@ -86,7 +87,7 @@
           default:
             return 0;
         }
-      },
+      }
 
       /**
        * 构建分布数据。
@@ -107,6 +108,7 @@
 
         return data;
       }
-    });
+    }
+    customElements.define(StatGeometric.is, StatGeometric);
   })();
 </script>

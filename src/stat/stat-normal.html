@@ -1,31 +1,32 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <script src="../../bower_components/jstat/dist/jstat.min.js"></script>
 
 <script>
   (function() {
-    Polymer({
-      is: 'stat-normal',
+    class StatNormal extends Polymer.Element {
+      static get is() { return 'stat-normal'; }
+      static get properties() {
+        return {
+          mean: {
+            type: Number,
+            notify: true
+          },
 
-      properties: {
-        mean: {
-          type: Number,
-          notify: true
-        },
+          std: {
+            type: Number,
+            notify: true
+          },
 
-        std: {
-          type: Number,
-          notify: true
-        },
-
-        /**
-          * 返回分布的统计学信息对象，包括mean，variance，std。
-          */
-        statInfo: {
-          type: Object,
-          computed: '_computeStatInfo(mean, std)',
-          notify: true
-        }
-      },
+          /**
+            * 返回分布的统计学信息对象，包括mean，variance，std。
+            */
+          statInfo: {
+            type: Object,
+            computed: '_computeStatInfo(mean, std)',
+            notify: true
+          }
+        };
+      }
 
       _computeStatInfo(lambda) {
         lambda = +lambda;
@@ -39,7 +40,7 @@
           variance: variance.toFixed(2),
           std: std.toFixed(2)
         };
-      },
+      }
 
       /**
         * 计算pdf
@@ -48,7 +49,7 @@
         */
       pdf(x) {
         return window.jStat.normal.pdf(x, +this.mean, +this.std);
-      },
+      }
 
       /**
        * 计算cdf
@@ -57,7 +58,7 @@
        */
       cdf(x) {
         return window.jStat.normal.cdf(x, +this.mean, +this.std);
-      },
+      }
 
       /**
         * @param {String} type 概率范围种类，包括lt, gt, between
@@ -82,34 +83,35 @@
           default:
             return 0;
         }
-      },
+      }
 
       /**
        * 构建分布数据。
        * @return {Array}
        */
       createDistributionData() {
-          let mean = +this.mean;
-          let std = +this.std;
-          let data = [];
+        let mean = +this.mean;
+        let std = +this.std;
+        let data = [];
 
-          for (let i = 0; i < 50000; i++) {
-            let normal = window.jStat.normal(mean, std);
-            let q = normal.sample();
-            let p = normal.pdf(q);
-            let el = {
-                'q': q,
-                'p': p
-            };
-            data.push(el);
+        for (let i = 0; i < 50000; i++) {
+          let normal = window.jStat.normal(mean, std);
+          let q = normal.sample();
+          let p = normal.pdf(q);
+          let el = {
+              'q': q,
+              'p': p
           };
+          data.push(el);
+        };
 
-          data.sort(function(x, y) {
-              return x.q - y.q;
-          });
+        data.sort(function(x, y) {
+            return x.q - y.q;
+        });
 
-          return data;
+        return data;
       }
-    });
+    }
+    customElements.define(StatNormal.is, StatNormal);
   })();
 </script>

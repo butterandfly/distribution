@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <script src="../../bower_components/d3/d3.min.js"></script>
 
@@ -24,25 +24,33 @@
     (function() {
       let d3 = window.d3;
 
-      Polymer({
-        is: 'd-discrete',
+      class DDiscrete extends Polymer.Element {
+        static get is() { return 'd-discrete'; }
+        static get properties() {
+          return{
+            data: {
+              value: null,
+              type: Array,
+              observer: '_draw'
+            },
 
-        properties: {
-          data: {
-            value: null,
-            type: Array,
-            observer: '_draw'
-          },
+            _svg: Object
+          };
+        }
 
-          _svg: Object
-        },
-
-        _draw(data) {
+                _draw(data) {
           if (!data) {
             return;
           }
 
           this._cleanSvg();
+
+          let windowWidth = window.innerWidth;
+          let windowHeight = 300;
+          if (windowWidth > 960) {
+            windowWidth = 960;
+            windowHeight = 500;
+          }
 
           let margin = {
             top: 10,
@@ -50,8 +58,9 @@
             bottom: 30,
             left: 50
           };
-          let width = 960 - margin.left - margin.right;
-          let height = 500 - margin.top - margin.bottom;
+
+          let width = windowWidth - margin.left - margin.right;
+          let height = windowHeight - margin.top - margin.bottom;
 
           this._svg = d3.select(this.root).append('svg')
             .attr('width', width + margin.left + margin.right)
@@ -99,14 +108,14 @@
           mainGroup.append('g')
             .attr('class', 'axis axis--y')
             .call(d3.axisLeft(y).ticks(10));
-        },
+        }
 
         _cleanSvg() {
           let svg = this.root.querySelector('svg');
           if (svg) {
             this.root.removeChild(svg);
           }
-        },
+        }
 
         /**
          * 选择X轴大于x的分布
@@ -121,7 +130,7 @@
 
               return false;
             });
-        },
+        }
 
         /**
          * 选择X轴小于x的分布
@@ -136,7 +145,7 @@
 
               return false;
             });
-        },
+        }
 
         /**
          * 选择X轴小于x的分布
@@ -153,7 +162,8 @@
               return false;
             });
         }
-      });
+      }
+      customElements.define(DDiscrete.is, DDiscrete);
     })();
   </script>
 </dom-module>

@@ -1,4 +1,4 @@
-<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
@@ -20,7 +20,6 @@
       #main {
         padding: 0;
         margin: 0;
-        min-width: 500px;
       }
       paper-dialog {
         display: flex;
@@ -67,41 +66,46 @@
   <script>
   (function() {
     'use strict';
-    Polymer({
-      is: 'd-info-dialog',
-      properties: {
-        /**
-         * The title of dialog.
-         */
-        title: {
-          type: String
-        },
+
+    class DInfoDialog extends Polymer.Element {
+      static get is() { return 'd-info-dialog'; }
+      static get properties() {
+        return {
+          /**
+           * The title of dialog.
+           */
+          title: {
+            type: String
+          },
 
 
-        /**
-         * The dialog will not be display untill it's true.
-         */
-        opened: {
-          type: Boolean,
-          value: false,
-          notify: true,
-          reflectToAttribute: true
-        }
-      },
+          /**
+           * The dialog will not be display untill it's true.
+           */
+          opened: {
+            type: Boolean,
+            value: false,
+            notify: true,
+            reflectToAttribute: true
+          }
+        };
+      }
 
       /**
        * Open this dialog。
        */
       open() {
         this.opened = true;
-      },
+      }
+
       /**
        * Close this dialog。
        */
-      close: function() {
+      close() {
         this.opened = false;
       }
-    });
+    }
+    customElements.define(DInfoDialog.is, DInfoDialog);
   })();
   </script>
 </dom-module>

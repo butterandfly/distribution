@@ -1,4 +1,5 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
 <dom-module id="d-info">
   <template>
     <style>
@@ -7,25 +8,18 @@
       }
 
       #info {
-        margin: 16px 0;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
       }
 
       #info>span {
         margin: 0 16px;
+        line-height: 24px;
       }
 
       #info>span>span {
         color: slateblue;
-      }
-
-      #probability {
-        display: flex;
-        justify-content: center;
-      }
-
-      #probability span{
-        color: coral;
-        font-size: 32px;
       }
     </style>
 
@@ -34,34 +28,28 @@
       <span>Variance: <span>[[variance]]</span></span>
       <span>Standard Deviation: <span>[[std]]</span></span>
     </div>
-
-    <div id="probability">
-      <span>[[probability]]</span>
-    </div>
   </template>
   <script>
     (function() {
       'use strict';
 
-      Polymer({
-        is: 'd-info',
-
-        properties: {
-          mean: {
-            type: Number
-          },
-          std: {
-            type: Number
-          },
-          variance: {
-            type: Number
-          },
-
-          probability: {
-            type: Number
-          }
+      class DInfo extends Polymer.Element {
+        static get is() { return 'd-info'; }
+        static get properties() {
+          return {
+            mean: {
+              type: Number
+            },
+            std: {
+              type: Number
+            },
+            variance: {
+              type: Number
+            }
+          };
         }
-      });
+      }
+      customElements.define(DInfo.is, DInfo);
     })();
   </script>
 </dom-module>

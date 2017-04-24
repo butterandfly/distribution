@@ -27,7 +27,7 @@
         });
 
         test('Instantiating the element works', function() {
-          assert.equal(element.is, 'stat-normal');
+          assert.equal(customElements.get('stat-normal').is, 'stat-normal');
         });
 
         test('"pdf" function', () => {

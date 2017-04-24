@@ -1,6 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 
 <link rel="import" href="./d-discrete.html">
@@ -9,7 +7,7 @@
 <link rel="import" href="../d-katex/d-katex.html">
 <link rel="import" href="./distribution-style.html">
 <link rel="import" href="./d-x-setting.html">
-<link rel="import" href="./d-distribution-behavior.html">
+<link rel="import" href="./d-distribution-mixin.html">
 <link rel="import" href="../stat/stat-poisson.html">
 
 <dom-module id="d-poisson-distribution">
@@ -23,18 +21,16 @@
     <stat-poisson id="statPoisson" lambda="[[distributionMean]]" stat-info="{{statInfo}}">
     </stat-poisson>
 
-    <app-toolbar>
-      <div main-title spacer>泊松分布（Poisson Distribution）</div>
-      <paper-icon-button icon="info" on-tap="openDialog"></paper-icon-button>
-    </app-toolbar>
-
     <div id="container">
       <div id="settings">
         <paper-input label="Mean" type="number" value="{{distributionMean}}"></paper-input>
       </div>
       <d-x-setting x1="1" x2="0" id="xSetting" on-updated="_handleXUpdated"></d-x-setting>
-      <d-info mean="[[statInfo.mean]]" std="[[statInfo.std]]" variance="[[statInfo.variance]]" probability="[[selectedProbability]]"></d-info>
+      <div id="probability">
+        [[selectedProbability]]
+      </div>
       <d-discrete id="discreteChart"></d-discrete>
+      <d-info mean="[[statInfo.mean]]" std="[[statInfo.std]]" variance="[[statInfo.variance]]"></d-info>
     </div>
 
     <d-info-dialog id="dialog">
@@ -56,33 +52,36 @@
     (function() {
       'use strict';
 
-      Polymer({
-        is: 'd-poisson-distribution',
-        behaviors: [Polymer.DDistributionBehavior],
+      class DPoissonDistribution extends window.DDistributionMixin(Polymer.Element) {
+        static get is() { return 'd-poisson-distribution'; }
+        static get properties() {
+          return {
+            distributionMean: {
+              value: 3,
+              type: Number,
+              notify: true
+            }
+          };
+        }
 
-        properties: {
-          distributionMean: {
-            value: 3,
-            type: Number,
-            notify: true
-          }
-        },
-
-        observers: [
-          '_redraw(distributionMean)'
-        ],
+        static get observers() {
+          return [
+            '_redraw(distributionMean)'
+          ];
+        }
 
         _redraw(distributionMean) {
           this.$.discreteChart.data = this.$.statPoisson.createDistributionData();
           this._handleXUpdated();
-        },
+        }
 
         _handleXUpdated() {
           let xSetting = this.$.xSetting;
           this.updateChart(this.$.discreteChart, xSetting);
           this.updateSelectedProbability(this.$.statPoisson, xSetting);
         }
-      });
+      }
+      customElements.define(DPoissonDistribution.is, DPoissonDistribution);
     })();
   </script>
 </dom-module>

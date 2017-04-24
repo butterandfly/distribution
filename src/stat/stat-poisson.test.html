@@ -21,13 +21,8 @@
     <script>
       suite('stat-poisson', function() {
         let element;
-
         setup(() => {
           element = fixture('basic');
-        });
-
-        test('Instantiating the element works', function() {
-          assert.equal(element.is, 'stat-poisson');
         });
 
         test('"pdf" function', () => {

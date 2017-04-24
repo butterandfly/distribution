@@ -1,30 +1,31 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <script src="../../bower_components/jstat/dist/jstat.min.js"></script>
 
 <script>
   (function() {
-    Polymer({
-      is: 'stat-poisson',
+    class StatPoisson extends Polymer.Element {
+      static get is() { return 'stat-poisson'; }
+      static get properties() {
+        return {
+          lambda: {
+            type: Number,
+            notify: true
+          },
 
-      properties: {
-        lambda: {
-          type: Number,
-          notify: true
-        },
+          probability: {
+            type: Number
+          },
 
-        probability: {
-          type: Number
-        },
-
-        /**
-          * 返回分布的统计学信息对象，包括mean，variance，std。
-          */
-        statInfo: {
-          type: Object,
-          computed: '_computeStatInfo(lambda)',
-          notify: true
-        }
-      },
+          /**
+            * 返回分布的统计学信息对象，包括mean，variance，std。
+            */
+          statInfo: {
+            type: Object,
+            computed: '_computeStatInfo(lambda)',
+            notify: true
+          }
+        };
+      }
 
       _computeStatInfo(lambda) {
         lambda = +lambda;
@@ -38,7 +39,7 @@
           variance: variance.toFixed(2),
           std: std.toFixed(2)
         };
-      },
+      }
 
       /**
         * 计算pdf
@@ -48,7 +49,7 @@
       pdf(x) {
         let lambda = +this.lambda;
         return window.jStat.poisson.pdf(x, lambda);
-      },
+      }
 
       /**
        * 计算cdf
@@ -58,7 +59,7 @@
       cdf(x) {
         let lambda = +this.lambda;
         return window.jStat.poisson.cdf(x, lambda);
-      },
+      }
 
       /**
         * @param {String} type 概率范围种类，包括lt, gt, between
@@ -83,7 +84,7 @@
           default:
             return 0;
         }
-      },
+      }
 
       /**
        * 构建分布数据。
@@ -105,6 +106,7 @@
 
         return data;
       }
-    });
+    }
+    customElements.define(StatPoisson.is, StatPoisson);
   })();
 </script>

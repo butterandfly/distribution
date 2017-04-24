@@ -34,6 +34,10 @@
         background-color: black;
       }
 
+      #grandpaPanel img {
+        max-width: 100vw;
+      }
+
       #grandpaPanel p, #grandpaPanel a {
         color: white;
       }
@@ -54,7 +58,7 @@
       }
 
       #loader {
-        margin: 240px auto;
+        margin: 120px auto;
         font-size: 10px;
         position: relative;
         text-indent: -9999em;
@@ -87,30 +91,13 @@
       #words {
         color: white;
         text-align: center;
-        margin-top: -150px;
       }
     </style>
 
     <!-- See https://goo.gl/OOhYW5 -->
     <link rel="manifest" href="/manifest.json"> 
 
-    <script>
-      // setup Polymer options
-      window.Polymer = {lazyRegister: true, dom: 'shadow'};
-      // load webcomponents polyfills
-      (function() {
-        if ('registerElement' in document &&
-          'import' in document.createElement('link') &&
-          'content' in document.createElement('template')) {
-          // browser has web components
-        } else {
-          // polyfill web components
-          let e = document.createElement('script');
-          e.src = './bower_components/webcomponentsjs/webcomponents-lite.min.js';
-          document.head.appendChild(e);
-        }
-      })();
-    </script>
+    <script src="./bower_components/webcomponentsjs/webcomponents-loader.js"></script>
     <link rel="import" id="bundle" href="./src/distribution-app/distribution-app.html" async>
   </head>
   <body class="loading">
@@ -132,27 +119,44 @@
     <script>
       // Show #grandpaPanel when the browser is too old.
       (function() {
+        /*eslint-disable */
         let grandpaPanel = document.querySelector('#grandpaPanel');
 
-        /**
-         * Get the version of chrome.
-         * @return {Number}
-         */
-        function getChromeVersion() {
-          let raw = navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./);
-          return raw ? parseInt(raw[2], 10) : false;
+        function get_browser() {
+            var ua=navigator.userAgent,tem,M=ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || []; 
+            if(/trident/i.test(M[1])){
+                tem=/\brv[ :]+(\d+)/g.exec(ua) || []; 
+                return {name:'IE',version:(tem[1]||'')};
+                }   
+            if(M[1]==='Chrome'){
+                tem=ua.match(/\bOPR|Edge\/(\d+)/)
+                if(tem!=null)   {return {name:'Opera', version:tem[1]};}
+                }   
+            M=M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
+            if((tem=ua.match(/version\/(\d+)/i))!=null) {M.splice(1,1,tem[1]);}
+            return {
+              name: M[0],
+              version: M[1]
+            };
         }
 
-        if (!window.chrome || getChromeVersion() < 54) {
-          // Not chrome54+
-          grandpaPanel.classList.add('active');
-          let continueBtn = document.querySelector('#grandpaPanel #continue');
-          continueBtn.addEventListener('click', () => {
-            document.body.removeChild(grandpaPanel);
-          });
-        } else {
-          document.body.removeChild(grandpaPanel);
+        let b = get_browser();
+        let compatibility = {
+          'Chrome': 54,
+          'Safari': 10
         }
+        for (let bName in compatibility) {
+          if (bName === b.name && compatibility[bName] <= +b.version) {
+            document.body.removeChild(grandpaPanel);
+            return;
+          }
+        }
+
+        grandpaPanel.classList.add('active');
+        let continueBtn = document.querySelector('#grandpaPanel #continue');
+        continueBtn.addEventListener('click', () => {
+          document.body.removeChild(grandpaPanel);
+        });
       })();
 
       // Delete #loadingPanel when the #bundle is loaded.
@@ -171,36 +175,6 @@
 
         link.addEventListener('load', onImportLoaded);
       })();
-    </script>
-    <script>
-      // Register server worker.
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-          navigator.serviceWorker.register('service-worker.js').then(function(reg) {
-            reg.onupdatefound = function() {
-              let installingWorker = reg.installing;
-              installingWorker.onstatechange = function() {
-                switch (installingWorker.state) {
-                  case 'installed':
-                    if (navigator.serviceWorker.controller) {
-                      window.DistributionAppUpdated = true;
-                      window.dispatchEvent(new CustomEvent('distribution-app-updated'));
-                    } else {
-                      window.DistributionAppCached = true;
-                      window.dispatchEvent(new CustomEvent('distribution-app-cached'));
-                    }
-                    break;
-                  case 'redundant':
-                    console.error('The installing service worker became redundant.');
-                    break;
-                }
-              };
-            };
-          }).catch(function(e) {
-            console.error('Error during service worker registration:', e);
-          });
-        });
-      }
     </script>
   </body>
 </html>

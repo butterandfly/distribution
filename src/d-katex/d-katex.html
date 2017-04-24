@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="./katex-fonts.html">
 <link rel="import" href="./katex-style.html">
 <script src="./katex.min.js"></script>
@@ -18,22 +18,24 @@
     (function() {
       'use strict';
 
-      Polymer({
-        is: 'd-katex',
-
-        properties: {
-          tex: {
-            type: String,
-            observer: '_redraw'
-          }
-        },
+      class DKatex extends Polymer.Element {
+        static get is() { return 'd-katex'; }
+        static get properties() {
+          return {
+            tex: {
+              type: String,
+              observer: '_redraw'
+            }
+          };
+        }
 
         _redraw(tex) {
           window.katex.render(tex, this.$.container, {
             displayMode: false
           });
         }
-      });
+      }
+      customElements.define(DKatex.is, DKatex);
     })();
   </script>
 </dom-module>

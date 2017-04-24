@@ -11,23 +11,26 @@
         font-weight: 400;
       }
 
-      #reference h3 {
-        margin-top: 32px;
-      }
-
-      #reference d-katex {
-        padding-left: 48px;
-      }
-
-      #container #settings {
+      #settings {
         display: flex;
         justify-content: space-around;
-        margin-bottom: 24px;
         align-self: flex-start;
+        padding-left: 24px;
+        margin-bottom: 16px;
       }
 
-      #container #settings paper-input {
-        margin-right: 48px;
+      #settings > paper-input:not(:first-child) {
+        margin-left: 48px;
+      }
+
+      #settings paper-input {
+        width: 110px;
+      }
+
+      #probability {
+        color: coral;
+        font-size: 32px;
+        align-self: center;
       }
 
       #container d-x-setting {
@@ -35,19 +38,13 @@
       }
 
       #container d-info {
-        margin: 24px 0 12px;
-      }
-
-      app-toolbar {
-        background: coral;
-        color: white;
+        margin: 12px 0 12px;
       }
 
       #container {
         display: flex;
         flex-direction: column;
-        align-items: center;
-        width: 900px;
+        align-items: flex-start;
         margin: 0 auto;
       }
     </style>

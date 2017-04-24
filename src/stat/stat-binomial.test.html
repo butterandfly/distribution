@@ -26,10 +26,6 @@
           element = fixture('basic');
         });
 
-        test('Instantiating the element works', function() {
-          assert.equal(element.is, 'stat-binomial');
-        });
-
         test('"pdf" function', () => {
           element.p = 0.25;
           element.n = 5;

@@ -1,33 +1,34 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <script src="../../bower_components/jstat/dist/jstat.min.js"></script>
 
 <script>
   (function() {
-    Polymer({
-      is: 'stat-binomial',
+    class StatBinomial extends Polymer.Element {
+      static get is() { return 'stat-binomial'; }
+      static get properties() {
+        return {
+          n: {
+            value: 10,
+            type: Number,
+            notify: true
+          },
 
-      properties: {
-        n: {
-          value: 10,
-          type: Number,
-          notify: true
-        },
+          p: {
+            value: 0.5,
+            type: Number,
+            notify: true
+          },
 
-        p: {
-          value: 0.5,
-          type: Number,
-          notify: true
-        },
-
-        /**
-          * 返回分布的统计学信息对象，包括mean，variance，std。
-          */
-        statInfo: {
-          type: Object,
-          computed: '_computeStatInfo(n, p)',
-          notify: true
-        }
-      },
+          /**
+            * 返回分布的统计学信息对象，包括mean，variance，std。
+            */
+          statInfo: {
+            type: Object,
+            computed: '_computeStatInfo(n, p)',
+            notify: true
+          }
+        };
+      }
 
       _computeStatInfo(n, p) {
         n = +n;
@@ -42,7 +43,7 @@
           variance: variance.toFixed(2),
           std: std.toFixed(2)
         };
-      },
+      }
 
       /**
         * @param {Number} i x轴
@@ -52,7 +53,7 @@
         let n = +this.n;
         let p = +this.p;
         return window.jStat.binomial.pdf(i, n, p);
-      },
+      }
 
       /**
         * @param {Number} i x轴
@@ -62,7 +63,7 @@
         let n = +this.n;
         let p = +this.p;
         return window.jStat.binomial.cdf(i, n, p);
-      },
+      }
 
       /**
         * @param {String} type 概率范围种类，包括lt, gt, between
@@ -87,7 +88,7 @@
           default:
             return 0;
         }
-      },
+      }
 
       /**
        * 构建分布数据。
@@ -106,6 +107,7 @@
 
         return data;
       }
-    });
+    }
+    customElements.define(StatBinomial.is, StatBinomial);
   })();
 </script>

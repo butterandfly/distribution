@@ -1,6 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 
 <link rel="import" href="./d-discrete.html">
@@ -10,7 +8,7 @@
 <link rel="import" href="./distribution-style.html">
 <link rel="import" href="../stat/stat-geometric.html">
 <link rel="import" href="./d-x-setting.html">
-<link rel="import" href="./d-distribution-behavior.html">
+<link rel="import" href="./d-distribution-mixin.html">
 
 <dom-module id="d-geometric-distribution">
   <template>
@@ -23,18 +21,16 @@
 
     <stat-geometric id="statGeometric" p="[[distributionP]]" stat-info="{{statInfo}}"></stat-geometric>
 
-    <app-toolbar>
-      <div main-title spacer>几何分布（Geometric Distribution）</div>
-      <paper-icon-button icon="info" on-tap="openDialog"></paper-icon-button>
-    </app-toolbar>
-
     <div id="container">
       <div id="settings">
         <paper-input label="成功概率（p）" type="number" value="{{distributionP}}"></paper-input>
       </div>
       <d-x-setting x1="1" x2="-1" id="xSetting" on-updated="_handleXUpdated"></d-x-setting>
-      <d-info mean="[[statInfo.mean]]" std="[[statInfo.std]]" variance="[[statInfo.variance]]" probability="[[selectedProbability]]"></d-info>
+      <div id="probability">
+        [[selectedProbability]]
+      </div>
       <d-discrete id="discreteChart"></d-discrete>
+      <d-info mean="[[statInfo.mean]]" std="[[statInfo.std]]" variance="[[statInfo.variance]]"></d-info>
     </div>
 
     <d-info-dialog id="dialog">
@@ -54,21 +50,23 @@
   </template>
   <script>
     (function() {
-      Polymer({
-        is: 'd-geometric-distribution',
-        behaviors: [Polymer.DDistributionBehavior],
+      class DGeometricDistribution extends window.DDistributionMixin(Polymer.Element) {
+        static get is() { return 'd-geometric-distribution'; }
+        static get properties() {
+          return {
+            distributionP: {
+              value: 0.5,
+              type: Number,
+              notify: true
+            }
+          };
+        }
 
-        properties: {
-          distributionP: {
-            value: 0.5,
-            type: Number,
-            notify: true
-          }
-        },
-
-        observers: [
-          '_redraw(distributionP)'
-        ],
+        static get observers() {
+          return [
+            '_redraw(distributionP)'
+          ];
+        }
 
         _redraw(distributionP) {
           if (!distributionP) {
@@ -77,14 +75,15 @@
 
           this.$.discreteChart.data = this.$.statGeometric.createDistributionData();
           this._handleXUpdated();
-        },
+        }
 
         _handleXUpdated() {
           let xSetting = this.$.xSetting;
           this.updateChart(this.$.discreteChart, xSetting);
           this.updateSelectedProbability(this.$.statGeometric, xSetting);
         }
-      });
+      }
+      customElements.define(DGeometricDistribution.is, DGeometricDistribution);
     })();
   </script>
 </dom-module>

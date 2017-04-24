@@ -1,6 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 
 <link rel="import" href="./d-discrete.html">
@@ -10,7 +8,7 @@
 <link rel="import" href="./distribution-style.html">
 <link rel="import" href="./d-x-setting.html">
 <link rel="import" href="../stat/stat-binomial.html">
-<link rel="import" href="./d-distribution-behavior.html">
+<link rel="import" href="./d-distribution-mixin.html">
 
 
 <dom-module id="d-binomial-distribution">
@@ -23,19 +21,17 @@
     </style>
     <stat-binomial id="statBinomial" p="[[distributionP]]" n="[[distributionN]]" stat-info="{{statInfo}}"></stat-binomial>
 
-    <app-toolbar>
-      <div main-title spacer>二项分布（Binomail Distribution）</div>
-      <paper-icon-button icon="info" on-tap="openDialog"></paper-icon-button>
-    </app-toolbar>
-
     <div id="container">
       <div id="settings">
         <paper-input label="总数n" type="number" value="{{distributionN}}"></paper-input>
         <paper-input label="成功概率p" type="number" value="{{distributionP}}"></paper-input>
       </div>
       <d-x-setting x1="1" x2="0" id="xSetting" on-updated="_handleXUpdated"></d-x-setting>
-      <d-info mean="[[statInfo.mean]]" std="[[statInfo.std]]" variance="[[statInfo.variance]]" probability="[[selectedProbability]]"></d-info>
+      <div id="probability">
+        [[selectedProbability]]
+      </div>
       <d-discrete id="discreteChart"></d-discrete>
+      <d-info mean="[[statInfo.mean]]" std="[[statInfo.std]]" variance="[[statInfo.variance]]"></d-info>
     </div>
 
     <d-info-dialog id="dialog">
@@ -57,39 +53,42 @@
     (function() {
       'use strict';
 
-      Polymer({
-        is: 'd-binomial-distribution',
-        behaviors: [Polymer.DDistributionBehavior],
+      class DBinomialDistribution extends window.DDistributionMixin(Polymer.Element) {
+        static get is() { return 'd-binomial-distribution'; }
+        static get properties() {
+          return {
+            distributionN: {
+              value: 10,
+              type: Number,
+              notify: true
+            },
 
-        properties: {
-          distributionN: {
-            value: 10,
-            type: Number,
-            notify: true
-          },
+            distributionP: {
+              value: 0.5,
+              type: Number,
+              notify: true
+            }
+          };
+        }
 
-          distributionP: {
-            value: 0.5,
-            type: Number,
-            notify: true
-          }
-        },
-
-        observers: [
-          '_redraw(distributionN, distributionP)'
-        ],
+        static get observers() {
+          return [
+            '_redraw(distributionN, distributionP)'
+          ];
+        }
 
         _redraw(distributionN, distributionP) {
           this.$.discreteChart.data = this.$.statBinomial.createDistributionData();
           this._handleXUpdated();
-        },
+        }
 
         _handleXUpdated() {
           let xSetting = this.$.xSetting;
           this.updateChart(this.$.discreteChart, xSetting);
           this.updateSelectedProbability(this.$.statBinomial, xSetting);
         }
-      });
+      }
+      customElements.define(DBinomialDistribution.is, DBinomialDistribution);
     })();
   </script>
 </dom-module>

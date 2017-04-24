@@ -130,7 +130,7 @@ gulp.task('swbuild', ['build'], function() {
       staticFileGlobs: [
         'images/**/*',
         'src/d-katex/fonts/*',
-        'bower_components/webcomponentsjs/webcomponents-lite.min.js',
+        'bower_components/webcomponentsjs/webcomponents-*.js',
         'bower_components/font-roboto/**/*.html',
         'bower_components/font-roboto/**/*.ttf'
       ]

@@ -26,10 +26,6 @@
           element = fixture('basic');
         });
 
-        test('Instantiating the element works', function() {
-          assert.equal(element.is, 'stat-geometric');
-        });
-
         test('"pdf" function', () => {
           element.p = 0.2;
           assert.equal(element.pdf(1).toFixed(2), 0.20);
