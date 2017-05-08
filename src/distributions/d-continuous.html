@@ -149,6 +149,11 @@
             }
           });
 
+          if (selectedData.length === 0) {
+            return;
+          }
+
+          selectedData.splice( 0, 0, {q: selectedData[0].q, p: 0});
           selectedData.push({q: selectedData[selectedData.length - 1].q, p: 0});
           this._select(selectedData);
         }
@@ -165,6 +170,11 @@
               selectedData.push(element);
             }
           });
+
+          if (selectedData.length === 0) {
+            return;
+          }
+
           selectedData.splice( 0, 0, {q: selectedData[0].q, p: 0});
 
           this._select(selectedData);
@@ -183,6 +193,11 @@
               selectedData.push(element);
             }
           });
+
+          if (selectedData.length === 0) {
+            return;
+          }
+
           selectedData.splice( 0, 0, {q: selectedData[0].q, p: 0});
           selectedData.push({q: selectedData[selectedData.length - 1].q, p: 0});
 

@@ -1,6 +1,14 @@
 {
   "entrypoint": "index.html",
   "shell": "src/distribution-app/distribution-app.html",
+  "fragments": [
+    "src/distributions/d-binomial-distribution.html",
+    "src/distributions/d-geometric-distribution.html",
+    "src/distributions/d-poisson-distribution.html",
+    "src/distributions/d-normal-distribution.html",
+    "src/distributions/d-t-distribution.html",
+    "src/distributions/d-chisquare-distribution.html"
+  ],
   "sources": [
     "images/**/*",
     "bower.json",

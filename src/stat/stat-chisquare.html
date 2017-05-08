@@ -1,0 +1,121 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<script src="../../bower_components/jstat/dist/jstat.min.js"></script>
+
+<script>
+  (function() {
+    let jStat = window.jStat;
+
+    class StatChisquare extends Polymer.Element {
+      static get is() { return 'stat-chisquare'; }
+      static get properties() {
+        return {
+          v: {
+            value: 2,
+            type: Number,
+            notify: true
+          },
+
+          /**
+            * 返回分布的统计学信息对象，包括mean，variance，std。
+            */
+          statInfo: {
+            type: Object,
+            computed: '_computeStatInfo(v)',
+            notify: true
+          }
+        };
+      }
+
+      _computeStatInfo(v) {
+        v = +v;
+
+        // let mean = jStat.studentt.mean(v);
+        let mean = +jStat.chisquare.mean(v).toFixed(2);
+        let variance = +jStat.chisquare.variance(v).toFixed(2);
+        let std = +Math.sqrt(variance).toFixed(2);
+
+        return {
+          mean: mean,
+          variance: variance,
+          std: std
+        };
+      }
+
+      /**
+        * @param {Number} x x轴
+        * @return {Number} y
+        */
+      pdf(x) {
+        let v = +this.v;
+        return window.jStat.chisquare.pdf(x, v);
+      }
+
+      /**
+        * @param {Number} x x轴
+        * @return {Number} y
+        */
+      cdf(x) {
+        let v = +this.v;
+        return window.jStat.chisquare.cdf(x, v);
+      }
+
+      /**
+        * @param {String} type 概率范围种类，包括lt, gt, between
+        * @param {Number} x1
+        * @param {Number} x2
+        * @return {Number} probability
+        */
+      computeProbability(type, x1, x2) {
+        switch(type) {
+          case 'lt':
+            return this.cdf(x1);
+          case 'gt':
+            return 1 - this.cdf(x1 - 1);
+          case 'between':
+            if (x1 >= x2) {
+              return 0;
+            }
+
+            let left = this.cdf(x1 - 1);
+            let right = 1 - this.cdf(x2);
+            return 1 - left - right;
+          default:
+            return 0;
+        }
+      }
+
+      /**
+       * 构建分布数据。
+       * @return {Array}
+       */
+      createDistributionData() {
+        let v = +this.v;
+        let stepper = 0.01;
+        let data = [];
+
+        let lastX = 0;
+        for (; ; ) {
+          let y = jStat.chisquare.pdf(lastX, v);
+          if (y > 2) {
+            lastX += stepper;
+            continue;
+          }
+
+          if (lastX > v && y < 0.001) {
+            break;
+          }
+          let el = {
+              'q': lastX,
+              'p': y
+          };
+          data.push(el);
+          lastX += stepper;
+        };
+        data.push({q: data[data.length - 1].q, p: 0});
+
+        return data;
+      }
+    }
+    customElements.define(StatChisquare.is, StatChisquare);
+  })();
+</script>

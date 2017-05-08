@@ -6,6 +6,21 @@
 
     <title>distribution</title>
     <meta name="description" content="distribution description">
+
+    <link rel="icon" href="images/favicon.ico">
+
+    <!-- Add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Distribution">
+
+    <!-- Homescreen icons -->
+    <link rel="apple-touch-icon" href="images/manifest/icon-48x48.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/manifest/icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="96x96" href="images/manifest/icon-96x96.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="images/manifest/icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="images/manifest/icon-192x192.png">
+
     <style media="screen">
       body {
         margin: 0;
@@ -110,7 +125,7 @@
 
     <div id="grandpaPanel">
       <image src="./images/upgrade.jpg"></image>
-      <p><span>该应用只支持chrome54+的浏览器版本。</span></p>
+      <p><span>该应用只支持Chrome54+/Safari10+的浏览器版本。</span></p>
       <a href="http://www.google.cn/intl/zh-CN/chrome/browser/desktop/index.html">
         下载最新的chrome浏览器
       </a>
@@ -140,11 +155,19 @@
             };
         }
 
+        // IOS's home screen mode.
+        // if ('standalone' in navigator && (/iphone|ipod|ipad/gi).test(navigator.platform) && (/Safari/i).test(navigator.appVersion)) {
+        if (navigator.standalone) {
+          document.body.removeChild(grandpaPanel);
+          return;
+        }
+
         let b = get_browser();
         let compatibility = {
           'Chrome': 54,
           'Safari': 10
         }
+
         for (let bName in compatibility) {
           if (bName === b.name && compatibility[bName] <= +b.version) {
             document.body.removeChild(grandpaPanel);

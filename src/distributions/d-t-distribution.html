@@ -6,11 +6,11 @@
 <link rel="import" href="../d-info-dialog.html">
 <link rel="import" href="../d-katex/d-katex.html">
 <link rel="import" href="./distribution-style.html">
-<link rel="import" href="../stat/stat-normal.html">
+<link rel="import" href="../stat/stat-t.html">
 <link rel="import" href="./d-distribution-mixin.html">
 <link rel="import" href="./d-x-setting.html">
 
-<dom-module id="d-normal-distribution">
+<dom-module id="d-t-distribution">
   <template>
     <style include="distribution-style"></style>
     <style>
@@ -20,17 +20,16 @@
 
     </style>
 
-  <stat-normal id="statNormal" mean="[[mean]]" std="[[std]]" stat-info="{{statInfo}}"></stat-normal>
+  <stat-t id="statT" v="[[v]]" stat-info="{{statInfo}}"></stat-t>
 
   <div id="container">
     <div id="settings">
-      <paper-input label="Mean" type="number" value="{{mean}}"></paper-input>
-      <paper-input id="stdInput" 
-                   label="Standard Deviation" 
+      <paper-input id="vInput" 
+                   label="v" 
                    type="number"
                    required
-                   value="{{std}}" 
-                   error-message="标准差必须为正数"></paper-input>
+                   value="{{v}}" 
+                   error-message="v必须大于1"></paper-input>
     </div>
     <d-x-setting x1="0" x2="1" id="xSetting" on-updated="_handleXUpdated"></d-x-setting>
     <div id="probability">
@@ -42,16 +41,16 @@
 
   <d-info-dialog id="dialog">
     <div id="reference">
-      <h2 class="title">正态分布
-        <a href="https://zh.wikipedia.org/wiki/%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83" class="wiki">维基百科</a>
+      <h2 class="title">t分布
+        <a href="https://zh.wikipedia.org/wiki/%E5%AD%A6%E7%94%9Ft-%E5%88%86%E5%B8%83" class="wiki">维基百科</a>
       </h2>
-      <p>正态分布（Normal distribution）又名高斯分布，一个非常普遍、重要的连续性概率分布。</p>
+      <p>学生t-分布（Student's t-distribution），用于根据小样本来估计呈正态分布且方差未知的总体的均值。</p>
       <h3>Mean:</h3>
-      <d-katex tex="\mu = E(X)"></d-katex>
+      <d-katex tex="\mu = E(X) = 0"></d-katex>
       <h3>Variance:</h3>
-      <d-katex tex="\sigma^2 = Var(X)"></d-katex>
-      <h3>PDF:</h3>
-      <d-katex tex="f(x) = \frac {1} {\sqrt{2\pi\sigma^2} } e^{- \frac {1} {2\sigma^2} (x-\mu)^2} "></d-katex>
+      <d-katex tex="\sigma^2 = Var(X) = \frac {v} {v-2}"></d-katex>
+      <!--<h3>PDF:</h3>
+      <d-katex tex="f(x) = \frac {1} {\sqrt{2\pi\sigma^2} } e^{- \frac {1} {2\sigma^2} (x-\mu)^2} "></d-katex>-->
     </div>
   </d-info-dialog>
   </template>
@@ -60,18 +59,12 @@
     (function() {
       'use strict';
 
-      class DNormalDistribution extends window.DDistributionMixin(Polymer.Element) {
-        static get is() { return 'd-normal-distribution'; }
+      class DTDistribution extends window.DDistributionMixin(Polymer.Element) {
+        static get is() { return 'd-t-distribution'; }
         static get properties() {
           return {
-            mean: {
-              value: 0,
-              type: Number,
-              notify: true
-            },
-
-            std: {
-              value: 1,
+            v: {
+              value: 2,
               type: Number,
               notify: true
             }
@@ -80,29 +73,29 @@
 
         static get observers() {
           return [
-            '_redraw(mean, std)'
+            '_redraw(v)'
           ];
         }
 
-        _redraw(mean, std) {
-          std = (+std);
-          if ( std <= 0) {
-            this.$.stdInput.invalid = true;
+        _redraw(v) {
+          v = +v;
+          if (v < 1) {
+            this.$.vInput.invalid = true;
             return;
           }
 
-          this.$.stdInput.invalid = false;
-          this.$.continuous.data = this.$.statNormal.createDistributionData();
+          this.$.vInput.invalid = false;
+          this.$.continuous.data = this.$.statT.createDistributionData();
           this._handleXUpdated();
         }
 
         _handleXUpdated() {
           let xSetting = this.$.xSetting;
           this.updateChart(this.$.continuous, xSetting);
-          this.updateSelectedProbability(this.$.statNormal, xSetting);
+          this.updateSelectedProbability(this.$.statT, xSetting);
         }
       }
-      customElements.define(DNormalDistribution.is, DNormalDistribution);
+      customElements.define(DTDistribution.is, DTDistribution);
     })();
   </script>
 </dom-module>

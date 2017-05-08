@@ -7,13 +7,7 @@
 <link rel="import" href="../../bower_components/app-route/app-route.html">
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
-<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
-
-<link rel="import" href="../distributions/d-normal-distribution.html">
-<link rel="import" href="../distributions/d-binomial-distribution.html">
-<link rel="import" href="../distributions/d-geometric-distribution.html">
-<link rel="import" href="../distributions/d-poisson-distribution.html">
 
 <dom-module id="distribution-app">
   <template>
@@ -93,41 +87,49 @@
         data="{{routeData}}">
     </app-route>
 
-    <app-header reveals>
-      <app-toolbar>
-        <paper-icon-button id="menuBtn" icon="menu" on-tap="toggleMenu"></paper-icon-button>
-        <div id="appTitle" main-title></div>
-        <paper-icon-button icon="info" on-tap="openDialog"></paper-icon-button>
-      </app-toolbar>
-    </app-header>
+    <app-toolbar>
+      <paper-icon-button id="menuBtn" icon="menu" on-tap="toggleMenu"></paper-icon-button>
+      <div id="appTitle" main-title></div>
+      <paper-icon-button icon="info" on-tap="openDialog"></paper-icon-button>
+    </app-toolbar>
 
-    <iron-pages attr-for-selected="id" selected="[[routeData.page]]">
-      <d-binomial-distribution id="binomail"></d-binomial-distribution>
+    <iron-pages attr-for-selected="id" selected="[[page]]">
+      <d-binomial-distribution id="binomial"></d-binomial-distribution>
       <d-geometric-distribution id="geometric"></d-geometric-distribution>
-      <d-normal-distribution id="normal"></d-normal-distribution>
       <d-poisson-distribution id="poisson"></d-poisson-distribution>
+      <d-normal-distribution id="normal"></d-normal-distribution>
+      <d-t-distribution id="t"></d-t-distribution>
+      <d-chisquare-distribution id="chisquare"></d-chisquare-distribution>
     </iron-pages>
 
     <app-drawer id="drawer" no-focus-trap>
       <iron-selector attr-for-selected="data-path" selected="[[path]]" id="selector">
         <h3>离散分布</h3>
-        <a href="#/binomail" data-path="/binomail" on-tap="toggleMenu">
+        <a href="#/binomial" data-path="/binomial">
           <div class="border-left"></div>
           <span>二项分布</span>
         </a>
-        <a href="#/geometric" data-path="/geometric" on-tap="toggleMenu">
+        <a href="#/geometric" data-path="/geometric">
           <div class="border-left"></div>
           <span>几何分布</span>
         </a>
-        <a href="#/poisson" data-path="/poisson" on-tap="toggleMenu">
+        <a href="#/poisson" data-path="/poisson">
           <div class="border-left"></div>
           <span>泊松分布</span>
         </a>
 
         <h3>连续分布</h3>
-        <a href="#/normal" data-path="/normal" on-tap="toggleMenu">
+        <a href="#/normal" data-path="/normal">
           <div class="border-left"></div>
           <span>正态分布</span>
+        </a>
+        <a href="#/t" data-path="/t">
+          <div class="border-left"></div>
+          <span>t分布</span>
+        </a>
+        <a href="#/chisquare" data-path="/chisquare">
+          <div class="border-left"></div>
+          <span>卡方分布</span>
         </a>
       </iron-selector>
     </app-drawer>
@@ -144,6 +146,12 @@
           return {
             path: {
               type: String
+            },
+
+            page: {
+              type: String,
+              reflectToAttribute: true,
+              observer: '_pageChanged'
             }
           };
         }
@@ -151,7 +159,7 @@
         static get observers() {
           return [
             '_redirect(path)',
-            '_observePage(routeData.page)'
+            '_observeRoutePage(routeData.page)'
           ];
         }
 
@@ -193,6 +201,16 @@
           this.shadowRoot.querySelector('iron-pages .iron-selected').openDialog();
         }
 
+        _pageChanged(page) {
+          // Load page import on demand. Show 404 page if fails
+          let resolvedPageUrl = this.resolveUrl('../distributions/d-' + page + '-distribution.html');
+          Polymer.importHref(
+              resolvedPageUrl,
+              null,
+              () => {console.error('Failed to import page: ' + page);},
+              true);
+        }
+
         // 对某些url进行重定向。
         _redirect(path) {
           if (path === '/' || path === '') {
@@ -200,10 +218,22 @@
           }
         }
 
-        _observePage(page) {
+        _observeRoutePage(page) {
+          if (page === undefined) {
+            return;
+          }
+
+          // Deault to 'normal'.
+          this.page = page || 'normal';
+
+          // Close a non-persistent drawer when the page & route are changed.
+          if (!this.$.drawer.persistent) {
+            this.$.drawer.close();
+          }
+
           let title;
           switch (page) {
-            case 'binomail':
+            case 'binomial':
               title = '二项分布';
               break;
             case 'geometric':
@@ -214,6 +244,11 @@
               break;
             case 'normal':
               title = '正态分布';
+              break;
+            case 't':
+              title = 't分布';
+            case 'chisquare':
+              title = '卡方分布';
               break;
           }
           this.$.appTitle.textContent = title;

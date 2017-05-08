@@ -1,0 +1,127 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<script src="../../bower_components/jstat/dist/jstat.min.js"></script>
+
+<script>
+  (function() {
+    let jStat = window.jStat;
+
+    class StatT extends Polymer.Element {
+      static get is() { return 'stat-t'; }
+      static get properties() {
+        return {
+          v: {
+            value: 2,
+            type: Number,
+            notify: true
+          },
+
+          /**
+            * 返回分布的统计学信息对象，包括mean，variance，std。
+            */
+          statInfo: {
+            type: Object,
+            computed: '_computeStatInfo(v)',
+            notify: true
+          }
+        };
+      }
+
+      _computeStatInfo(v) {
+        v = +v;
+
+        // let mean = jStat.studentt.mean(v);
+        let mean = undefined;
+        if (v > 1) {
+          mean = 1;
+        }
+
+        let variance = undefined;
+        let std = undefined;
+        if (variance === 2) {
+          variance = Infinity;
+          std = Infinity;
+        }
+
+        if (v > 2) {
+          variance = jStat.studentt.variance(v).toFixed(2);
+          std = Math.sqrt(variance).toFixed(2);
+        }
+
+        return {
+          mean: mean,
+          variance: variance,
+          std: std
+        };
+      }
+
+      /**
+        * @param {Number} x x轴
+        * @return {Number} y
+        */
+      pdf(x) {
+        let v = +this.v;
+        return window.jStat.studentt.pdf(x, v);
+      }
+
+      /**
+        * @param {Number} x x轴
+        * @return {Number} y
+        */
+      cdf(x) {
+        let v = +this.v;
+        return window.jStat.studentt.cdf(x, v);
+      }
+
+      /**
+        * @param {String} type 概率范围种类，包括lt, gt, between
+        * @param {Number} x1
+        * @param {Number} x2
+        * @return {Number} probability
+        */
+      computeProbability(type, x1, x2) {
+        switch(type) {
+          case 'lt':
+            return this.cdf(x1);
+          case 'gt':
+            return 1 - this.cdf(x1 - 1);
+          case 'between':
+            if (x1 >= x2) {
+              return 0;
+            }
+
+            let left = this.cdf(x1 - 1);
+            let right = 1 - this.cdf(x2);
+            return 1 - left - right;
+          default:
+            return 0;
+        }
+      }
+
+      /**
+       * 构建分布数据。
+       * @return {Array}
+       */
+      createDistributionData() {
+        let v = +this.v;
+        let data = [];
+
+        data.push({q: -5, p: 0});
+        let lastX = -5;
+        for (let i = 0; i < 1000; i++) {
+          let t = jStat.studentt(v);
+          let p = t.pdf(lastX);
+          let el = {
+              'q': lastX,
+              'p': p
+          };
+          data.push(el);
+          lastX = (lastX + 1/100);
+        };
+        data.push({q: 5, p: 0});
+
+        return data;
+      }
+    }
+    customElements.define(StatT.is, StatT);
+  })();
+</script>

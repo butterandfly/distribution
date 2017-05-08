@@ -6,11 +6,11 @@
 <link rel="import" href="../d-info-dialog.html">
 <link rel="import" href="../d-katex/d-katex.html">
 <link rel="import" href="./distribution-style.html">
-<link rel="import" href="../stat/stat-normal.html">
+<link rel="import" href="../stat/stat-chisquare.html">
 <link rel="import" href="./d-distribution-mixin.html">
 <link rel="import" href="./d-x-setting.html">
 
-<dom-module id="d-normal-distribution">
+<dom-module id="d-chisquare-distribution">
   <template>
     <style include="distribution-style"></style>
     <style>
@@ -20,17 +20,16 @@
 
     </style>
 
-  <stat-normal id="statNormal" mean="[[mean]]" std="[[std]]" stat-info="{{statInfo}}"></stat-normal>
+  <stat-chisquare id="statChisquare" v="[[v]]" stat-info="{{statInfo}}"></stat-chisquare>
 
   <div id="container">
     <div id="settings">
-      <paper-input label="Mean" type="number" value="{{mean}}"></paper-input>
-      <paper-input id="stdInput" 
-                   label="Standard Deviation" 
+      <paper-input id="vInput" 
+                   label="v" 
                    type="number"
                    required
-                   value="{{std}}" 
-                   error-message="标准差必须为正数"></paper-input>
+                   value="{{v}}" 
+                   error-message="v必须大于0"></paper-input>
     </div>
     <d-x-setting x1="0" x2="1" id="xSetting" on-updated="_handleXUpdated"></d-x-setting>
     <div id="probability">
@@ -42,16 +41,16 @@
 
   <d-info-dialog id="dialog">
     <div id="reference">
-      <h2 class="title">正态分布
-        <a href="https://zh.wikipedia.org/wiki/%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83" class="wiki">维基百科</a>
+      <h2 class="title">卡方分布
+        <a href="https://zh.wikipedia.org/zh-hans/%E5%8D%A1%E6%96%B9%E5%88%86%E4%BD%88" class="wiki">维基百科</a>
       </h2>
-      <p>正态分布（Normal distribution）又名高斯分布，一个非常普遍、重要的连续性概率分布。</p>
+      <p>卡方分布（chi-square distribution），是一种特殊的伽玛分布，是统计推断中应用最为广泛的概率分布之一，例如假设检验和置信区间的计算。</p>
       <h3>Mean:</h3>
-      <d-katex tex="\mu = E(X)"></d-katex>
+      <d-katex tex="\mu = E(X) = v"></d-katex>
       <h3>Variance:</h3>
-      <d-katex tex="\sigma^2 = Var(X)"></d-katex>
+      <d-katex tex="\sigma^2 = Var(X) = 2v"></d-katex>
       <h3>PDF:</h3>
-      <d-katex tex="f(x) = \frac {1} {\sqrt{2\pi\sigma^2} } e^{- \frac {1} {2\sigma^2} (x-\mu)^2} "></d-katex>
+      <d-katex tex="f(x) = \frac {1} { 2^\frac{k}{2} \Gamma(\frac{k}{2}) } x^{\frac{k}{2} - 1} e^{-\frac{x}{2}} "></d-katex>
     </div>
   </d-info-dialog>
   </template>
@@ -60,18 +59,12 @@
     (function() {
       'use strict';
 
-      class DNormalDistribution extends window.DDistributionMixin(Polymer.Element) {
-        static get is() { return 'd-normal-distribution'; }
+      class DChisquareDistribution extends window.DDistributionMixin(Polymer.Element) {
+        static get is() { return 'd-chisquare-distribution'; }
         static get properties() {
           return {
-            mean: {
-              value: 0,
-              type: Number,
-              notify: true
-            },
-
-            std: {
-              value: 1,
+            v: {
+              value: 2,
               type: Number,
               notify: true
             }
@@ -80,29 +73,29 @@
 
         static get observers() {
           return [
-            '_redraw(mean, std)'
+            '_redraw(v)'
           ];
         }
 
-        _redraw(mean, std) {
-          std = (+std);
-          if ( std <= 0) {
-            this.$.stdInput.invalid = true;
+        _redraw(v) {
+          v = +v;
+          if ( v < 1) {
+            this.$.vInput.invalid = true;
             return;
           }
 
-          this.$.stdInput.invalid = false;
-          this.$.continuous.data = this.$.statNormal.createDistributionData();
+          this.$.vInput.invalid = false;
+          this.$.continuous.data = this.$.statChisquare.createDistributionData();
           this._handleXUpdated();
         }
 
         _handleXUpdated() {
           let xSetting = this.$.xSetting;
           this.updateChart(this.$.continuous, xSetting);
-          this.updateSelectedProbability(this.$.statNormal, xSetting);
+          this.updateSelectedProbability(this.$.statChisquare, xSetting);
         }
       }
-      customElements.define(DNormalDistribution.is, DNormalDistribution);
+      customElements.define(DChisquareDistribution.is, DChisquareDistribution);
     })();
   </script>
 </dom-module>
