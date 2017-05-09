@@ -100,6 +100,7 @@
       <d-normal-distribution id="normal"></d-normal-distribution>
       <d-t-distribution id="t"></d-t-distribution>
       <d-chisquare-distribution id="chisquare"></d-chisquare-distribution>
+      <d-mean-sd id="mean-sd"></d-mean-sd>
     </iron-pages>
 
     <app-drawer id="drawer" no-focus-trap>
@@ -130,6 +131,12 @@
         <a href="#/chisquare" data-path="/chisquare">
           <div class="border-left"></div>
           <span>卡方分布</span>
+        </a>
+
+        <h3>其他</h3>
+        <a href="#/mean-sd" data-path="/mean-sd">
+          <div class="border-left"></div>
+          <span>抽样均值分布</span>
         </a>
       </iron-selector>
     </app-drawer>
@@ -202,13 +209,23 @@
         }
 
         _pageChanged(page) {
+          let resolvedPageUrl;
+          switch(page) {
+            case 'mean-sd':
+              resolvedPageUrl = this.resolveUrl('../sample-distributions/d-' + page + '.html');
+              break;
+            default:
+              resolvedPageUrl = this.resolveUrl('../distributions/d-' + page + '-distribution.html');
+              break;
+          }
+
           // Load page import on demand. Show 404 page if fails
-          let resolvedPageUrl = this.resolveUrl('../distributions/d-' + page + '-distribution.html');
           Polymer.importHref(
-              resolvedPageUrl,
-              null,
-              () => {console.error('Failed to import page: ' + page);},
-              true);
+            resolvedPageUrl,
+            null,
+            () => {console.error('Failed to import page: ' + page);},
+            true
+          );
         }
 
         // 对某些url进行重定向。
@@ -247,8 +264,12 @@
               break;
             case 't':
               title = 't分布';
+              break;
             case 'chisquare':
               title = '卡方分布';
+              break;
+            case 'mean-sd':
+              title = '抽样均值分布';
               break;
           }
           this.$.appTitle.textContent = title;

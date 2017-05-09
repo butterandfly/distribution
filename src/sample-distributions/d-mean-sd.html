@@ -1,0 +1,144 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="../distributions/d-continuous.html">
+<link rel="import" href="../distributions/d-info.html">
+<link rel="import" href="../d-info-dialog.html">
+<link rel="import" href="../d-katex/d-katex.html">
+<link rel="import" href="../distributions/distribution-style.html">
+<link rel="import" href="../stat/stat-normal.html">
+<link rel="import" href="../distributions/d-distribution-mixin.html">
+<link rel="import" href="../distributions/d-x-setting.html">
+
+<dom-module id="d-mean-sd">
+  <template>
+    <style include="distribution-style"></style>
+    <style>
+    :host {
+      display: block;
+    }
+
+    </style>
+
+  <stat-normal id="statNormal" mean="[[mean]]" std="[[std]]" stat-info="{{statInfo}}"></stat-normal>
+
+  <div id="container">
+    <div id="settings">
+      <paper-input label="样本数" type="number" value="{{n}}"></paper-input>
+      <paper-input label="总体均值" type="number" value="{{populationMean}}"></paper-input>
+      <paper-input id="stdInput" 
+                   label="总体标准差" 
+                   type="number"
+                   required
+                   value="{{populationStd}}" 
+                   error-message="总体标准差必须为正数"></paper-input>
+    </div>
+    <d-x-setting x1="0" x2="1" id="xSetting" on-updated="_handleXUpdated"></d-x-setting>
+    <div id="probability">
+      [[selectedProbability]]
+    </div>
+    <d-continuous id="continuous"></d-continuous>
+    <d-info mean="[[statInfo.mean]]" std="[[statInfo.std]]" variance="[[statInfo.variance]]"></d-info>
+  </div>
+
+  <d-info-dialog id="dialog">
+    <div id="reference">
+      <h2 class="title">抽样均值分布</h2>
+      <p>
+        若整体分布<d-katex tex="X"></d-katex>的均值及方差分别为<d-katex tex="\mu"></d-katex>
+        和<d-katex tex="\sigma^2"></d-katex>，则对于样本数为n的抽样均值分布<d-katex tex="\bar{X}"></d-katex>有：
+      </p>
+      <h3>Mean:</h3>
+      <d-katex tex="E(\bar{X}) = \mu"></d-katex>
+      <h3>Variance:</h3>
+      <d-katex tex="Var(\bar{X}) = \sigma^2 / n"></d-katex>
+      <h3>Standard Error</h3>
+      <d-katex tex="Var(\bar{X}) = \sigma / \sqrt{n}"></d-katex>
+    </div>
+  </d-info-dialog>
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      class DMeanSD extends window.DDistributionMixin(Polymer.Element) {
+        static get is() { return 'd-mean-sd'; }
+        static get properties() {
+          return {
+            n: {
+              value: 1,
+              type: Number,
+              notify: true
+            },
+
+            populationMean: {
+              value: 0,
+              type: Number,
+              notify: true
+            },
+
+            mean: {
+              type: Number,
+              computed: '_computeMean(populationMean)',
+              notify: true
+            },
+
+            populationStd: {
+              value: 1,
+              type: Number,
+              notify: true
+            },
+
+            std: {
+              type: Number,
+              computed: '_computeStd(populationStd, n)',
+              notify: true
+            }
+          };
+        }
+
+        static get observers() {
+          return [
+            '_redraw(mean, std)'
+          ];
+        }
+
+        _computeMean(populationMean) {
+          return populationMean;
+        }
+
+        _computeStd(populationStd, n) {
+          if (!populationStd || !n) {
+            return undefined;
+          }
+
+          return populationStd / Math.sqrt(n);
+        }
+
+        _redraw(mean, std) {
+          if (mean === undefined || std === undefined) {
+            return;
+          }
+
+          std = (+std);
+          if ( std <= 0) {
+            this.$.stdInput.invalid = true;
+            return;
+          }
+
+          this.$.stdInput.invalid = false;
+          this.$.continuous.data = this.$.statNormal.createDistributionData();
+          this._handleXUpdated();
+        }
+
+        _handleXUpdated() {
+          let xSetting = this.$.xSetting;
+          this.updateChart(this.$.continuous, xSetting);
+          this.updateSelectedProbability(this.$.statNormal, xSetting);
+        }
+      }
+      customElements.define(DMeanSD.is, DMeanSD);
+    })();
+  </script>
+</dom-module>

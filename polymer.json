@@ -7,7 +7,8 @@
     "src/distributions/d-poisson-distribution.html",
     "src/distributions/d-normal-distribution.html",
     "src/distributions/d-t-distribution.html",
-    "src/distributions/d-chisquare-distribution.html"
+    "src/distributions/d-chisquare-distribution.html",
+    "src/distributions/d-mean-sd.html"
   ],
   "sources": [
     "images/**/*",
