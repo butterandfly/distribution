@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 
 <link rel="import" href="../distributions/d-continuous.html">
 <link rel="import" href="../distributions/d-info.html">
@@ -14,31 +15,62 @@
   <template>
     <style include="distribution-style"></style>
     <style>
-    :host {
-      display: block;
-    }
+      :host {
+        display: block;
+      }
 
+      #settings {
+        display: block;
+      }
+
+      #settings>div {
+        display: flex;
+        align-items: center;
+      }
+
+      #isNormalCheckbox, #populationMeanInput {
+        margin-right: 32px;
+      }
+
+      #isNormalCheckbox {
+        --paper-checkbox-checked-color: coral;
+      }
+
+      #notAvailableMessage {
+        padding: 24px;
+        color: indianred;
+      }
     </style>
 
   <stat-normal id="statNormal" mean="[[mean]]" std="[[std]]" stat-info="{{statInfo}}"></stat-normal>
 
   <div id="container">
     <div id="settings">
-      <paper-input label="样本数" type="number" value="{{n}}"></paper-input>
-      <paper-input label="总体均值" type="number" value="{{populationMean}}"></paper-input>
-      <paper-input id="stdInput" 
-                   label="总体标准差" 
-                   type="number"
-                   required
-                   value="{{populationStd}}" 
-                   error-message="总体标准差必须为正数"></paper-input>
+      <div>
+        <paper-checkbox checked="{{isPopulationNormal}}" id="isNormalCheckbox">整体分布为正态分布</paper-checkbox>
+        <paper-input label="样本数" type="number" value="{{n}}"></paper-input>
+      </div>
+      <div>
+        <paper-input id="populationMeanInput" label="总体均值" type="number" value="{{populationMean}}"></paper-input>
+        <paper-input id="stdInput" 
+                    label="总体标准差" 
+                    type="number"
+                    required
+                    value="{{populationStd}}" 
+                    error-message="总体标准差必须为正数"></paper-input>
+      </div>
     </div>
     <d-x-setting x1="0" x2="1" id="xSetting" on-updated="_handleXUpdated"></d-x-setting>
-    <div id="probability">
-      [[selectedProbability]]
+    <div hidden$="[[!isDistributionAvailable]]">
+      <div id="probability">
+        [[selectedProbability]]
+      </div>
+      <d-continuous id="continuous"></d-continuous>
+      <d-info mean="[[statInfo.mean]]" std="[[statInfo.std]]" variance="[[statInfo.variance]]"></d-info>
     </div>
-    <d-continuous id="continuous"></d-continuous>
-    <d-info mean="[[statInfo.mean]]" std="[[statInfo.std]]" variance="[[statInfo.variance]]"></d-info>
+    <div id="notAvailableMessage" hidden$="[[isDistributionAvailable]]">
+      当总体分布是正态分布，或样本数大于等于30时，抽样均值分布才会服从正态分布
+    </div>
   </div>
 
   <d-info-dialog id="dialog">
@@ -94,6 +126,16 @@
               type: Number,
               computed: '_computeStd(populationStd, n)',
               notify: true
+            },
+
+            isPopulationNormal: {
+              type: Boolean,
+              value: true
+            },
+
+            isDistributionAvailable: {
+              type: Boolean,
+              computed: '_computeIsDistributionAvailable(isPopulationNormal, n)'
             }
           };
         }
@@ -114,6 +156,16 @@
           }
 
           return populationStd / Math.sqrt(n);
+        }
+
+        _computeIsDistributionAvailable(isPopulationNormal, n) {
+          n = +n;
+
+          if (!isPopulationNormal && n < 30) {
+            return false;
+          }
+
+          return true;
         }
 
         _redraw(mean, std) {
