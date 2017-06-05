@@ -1,0 +1,249 @@
+<div hidden="" by-polymer-bundler=""><link rel="import" href="../distribution-app.html"><script>Polymer.IronCheckedElementBehaviorImpl={properties:{checked:{type:Boolean,value:!1,reflectToAttribute:!0,notify:!0,observer:'_checkedChanged'},toggles:{type:Boolean,value:!0,reflectToAttribute:!0},value:{type:String,value:'on',observer:'_valueChanged'}},observers:['_requiredChanged(required)'],created:function(){this._hasIronCheckedElementBehavior=!0},_getValidity:function(){return this.disabled||!this.required||this.checked},_requiredChanged:function(){this.required?this.setAttribute('aria-required','true'):this.removeAttribute('aria-required')},_checkedChanged:function(){this.active=this.checked,this.fire('iron-change')},_valueChanged:function(){(this.value===void 0||null===this.value)&&(this.value='on')}},Polymer.IronCheckedElementBehavior=[Polymer.IronFormElementBehavior,Polymer.IronValidatableBehavior,Polymer.IronCheckedElementBehaviorImpl];</script>
+<script>Polymer.PaperCheckedElementBehaviorImpl={_checkedChanged:function(){Polymer.IronCheckedElementBehaviorImpl._checkedChanged.call(this),this.hasRipple()&&(this.checked?this._ripple.setAttribute('checked',''):this._ripple.removeAttribute('checked'))},_buttonStateChanged:function(){Polymer.PaperRippleBehavior._buttonStateChanged.call(this);this.disabled||this.isAttached&&(this.checked=this.active)}},Polymer.PaperCheckedElementBehavior=[Polymer.PaperInkyFocusBehavior,Polymer.IronCheckedElementBehavior,Polymer.PaperCheckedElementBehaviorImpl];</script>
+<dom-module id="paper-checkbox" assetpath="../../bower_components/paper-checkbox/">
+  <template strip-whitespace="">
+    <style>
+      :host {
+        display: inline-block;
+        white-space: nowrap;
+        cursor: pointer;
+        --calculated-paper-checkbox-size: var(--paper-checkbox-size, 18px);
+        /* -1px is a sentinel for the default and is replaced in `attached`. */
+        --calculated-paper-checkbox-ink-size: var(--paper-checkbox-ink-size, -1px);
+        @apply --paper-font-common-base;
+        line-height: 0;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      :host([hidden]) {
+        display: none !important;
+      }
+
+      :host(:focus) {
+        outline: none;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      #checkboxContainer {
+        display: inline-block;
+        position: relative;
+        width: var(--calculated-paper-checkbox-size);
+        height: var(--calculated-paper-checkbox-size);
+        min-width: var(--calculated-paper-checkbox-size);
+        margin: var(--paper-checkbox-margin, initial);
+        vertical-align: var(--paper-checkbox-vertical-align, middle);
+        background-color: var(--paper-checkbox-unchecked-background-color, transparent);
+      }
+
+      #ink {
+        position: absolute;
+
+        /* Center the ripple in the checkbox by negative offsetting it by
+         * (inkWidth - rippleWidth) / 2 */
+        top: calc(0px - (var(--calculated-paper-checkbox-ink-size) - var(--calculated-paper-checkbox-size)) / 2);
+        left: calc(0px - (var(--calculated-paper-checkbox-ink-size) - var(--calculated-paper-checkbox-size)) / 2);
+        width: var(--calculated-paper-checkbox-ink-size);
+        height: var(--calculated-paper-checkbox-ink-size);
+        color: var(--paper-checkbox-unchecked-ink-color, var(--primary-text-color));
+        opacity: 0.6;
+        pointer-events: none;
+      }
+
+      :host-context([dir="rtl"]) #ink {
+        right: calc(0px - (var(--calculated-paper-checkbox-ink-size) - var(--calculated-paper-checkbox-size)) / 2);
+        left: auto;
+      }
+
+      #ink[checked] {
+        color: var(--paper-checkbox-checked-ink-color, var(--primary-color));
+      }
+
+      #checkbox {
+        position: relative;
+        box-sizing: border-box;
+        height: 100%;
+        border: solid 2px;
+        border-color: var(--paper-checkbox-unchecked-color, var(--primary-text-color));
+        border-radius: 2px;
+        pointer-events: none;
+        -webkit-transition: background-color 140ms, border-color 140ms;
+        transition: background-color 140ms, border-color 140ms;
+      }
+
+      /* checkbox checked animations */
+      #checkbox.checked #checkmark {
+        -webkit-animation: checkmark-expand 140ms ease-out forwards;
+        animation: checkmark-expand 140ms ease-out forwards;
+      }
+
+      @-webkit-keyframes checkmark-expand {
+        0% {
+          -webkit-transform: scale(0, 0) rotate(45deg);
+        }
+        100% {
+          -webkit-transform: scale(1, 1) rotate(45deg);
+        }
+      }
+
+      @keyframes checkmark-expand {
+        0% {
+          transform: scale(0, 0) rotate(45deg);
+        }
+        100% {
+          transform: scale(1, 1) rotate(45deg);
+        }
+      }
+
+      #checkbox.checked {
+        background-color: var(--paper-checkbox-checked-color, var(--primary-color));
+        border-color: var(--paper-checkbox-checked-color, var(--primary-color));
+      }
+
+      #checkmark {
+        position: absolute;
+        width: 36%;
+        height: 70%;
+        border-style: solid;
+        border-top: none;
+        border-left: none;
+        border-right-width: calc(2/15 * var(--calculated-paper-checkbox-size));
+        border-bottom-width: calc(2/15 * var(--calculated-paper-checkbox-size));
+        border-color: var(--paper-checkbox-checkmark-color, white);
+        -webkit-transform-origin: 97% 86%;
+        transform-origin: 97% 86%;
+        box-sizing: content-box; /* protect against page-level box-sizing */
+      }
+
+      :host-context([dir="rtl"]) #checkmark {
+        -webkit-transform-origin: 50% 14%;
+        transform-origin: 50% 14%;
+      }
+
+      /* label */
+      #checkboxLabel {
+        position: relative;
+        display: inline-block;
+        vertical-align: middle;
+        padding-left: var(--paper-checkbox-label-spacing, 8px);
+        white-space: normal;
+        line-height: normal;
+        color: var(--paper-checkbox-label-color, var(--primary-text-color));
+        @apply --paper-checkbox-label;
+      }
+
+      :host([checked]) #checkboxLabel {
+        color: var(--paper-checkbox-label-checked-color, var(--paper-checkbox-label-color, var(--primary-text-color)));
+        @apply --paper-checkbox-label-checked;
+      }
+
+      :host-context([dir="rtl"]) #checkboxLabel {
+        padding-right: var(--paper-checkbox-label-spacing, 8px);
+        padding-left: 0;
+      }
+
+      #checkboxLabel[hidden] {
+        display: none;
+      }
+
+      /* disabled state */
+
+      :host([disabled]) #checkbox {
+        opacity: 0.5;
+        border-color: var(--paper-checkbox-unchecked-color, var(--primary-text-color));
+      }
+
+      :host([disabled][checked]) #checkbox {
+        background-color: var(--paper-checkbox-unchecked-color, var(--primary-text-color));
+        opacity: 0.5;
+      }
+
+      :host([disabled]) #checkboxLabel  {
+        opacity: 0.65;
+      }
+
+      /* invalid state */
+      #checkbox.invalid:not(.checked) {
+        border-color: var(--paper-checkbox-error-color, var(--error-color));
+      }
+    </style>
+
+    <div id="checkboxContainer">
+      <div id="checkbox" class$="[[_computeCheckboxClass(checked, invalid)]]">
+        <div id="checkmark" class$="[[_computeCheckmarkClass(checked)]]"></div>
+      </div>
+    </div>
+
+    <div id="checkboxLabel"><slot></slot></div>
+  </template>
+
+  <script>Polymer({is:'paper-checkbox',behaviors:[Polymer.PaperCheckedElementBehavior],hostAttributes:{role:'checkbox','aria-checked':!1,tabindex:0},properties:{ariaActiveAttribute:{type:String,value:'aria-checked'}},attached:function(){Polymer.RenderStatus.afterNextRender(this,function(){var a=this.getComputedStyleValue('--calculated-paper-checkbox-ink-size').trim();if('-1px'===a){var b=parseFloat(this.getComputedStyleValue('--calculated-paper-checkbox-size').trim()),c=Math.floor(8/3*b);c%2!=b%2&&c++,this.updateStyles({'--paper-checkbox-ink-size':c+'px'})}})},_computeCheckboxClass:function(a,b){var c='';return a&&(c+='checked '),b&&(c+='invalid'),c},_computeCheckmarkClass:function(a){return a?'':'hidden'},_createRipple:function(){return this._rippleContainer=this.$.checkboxContainer,Polymer.PaperInkyFocusBehaviorImpl._createRipple.call(this)}});</script>
+</dom-module>
+</div><dom-module id="d-mean-sd">
+  <template>
+    <style include="distribution-style"></style>
+    <style>
+      :host {
+        display: block;
+      }
+
+      #setting {
+        display: block;
+      }
+
+      .setting-row {
+        display: flex;
+        align-items: center;
+      }
+
+      #isNormalCheckbox, #populationMeanInput {
+        margin-right: 32px;
+      }
+
+      #isNormalCheckbox {
+        --paper-checkbox-checked-color: coral;
+      }
+
+      #notAvailableMessage {
+        padding: 24px;
+        color: indianred;
+      }
+    </style>
+
+    <stat-normal id="statNormal" mean="[[mean]]" std="[[std]]" stat-info="{{statInfo}}"></stat-normal>
+
+    <d-distribution-layout id="distributionLayout" stat-info="[[statInfo]]" on-x-setting-data-changed="_handleXSettingDataChanged" continuous="" disable-distribution="[[!isDistributionAvailable]]">
+      <div slot="setting" id="setting" class="setting">
+        <div class="setting-row">
+          <paper-checkbox checked="{{isPopulationNormal}}" id="isNormalCheckbox">整体分布为正态分布</paper-checkbox>
+          <paper-input id="nInput" label="样本数" type="number" value="{{n}}" error-message="样本数必须大于0"></paper-input>
+        </div>
+        <div class="setting-row">
+          <paper-input id="populationMeanInput" label="总体均值" type="number" value="{{populationMean}}"></paper-input>
+          <paper-input id="stdInput" label="总体标准差" type="number" required="" value="{{populationStd}}" error-message="总体标准差必须为正数"></paper-input>
+        </div>
+        <div id="notAvailableMessage" hidden$="[[isDistributionAvailable]]">
+          当总体分布是正态分布，或样本数大于等于30时，抽样均值分布才会服从正态分布
+        </div>
+      </div>
+
+      <div slot="reference" id="reference" class="reference">
+        <h2 class="title">抽样均值分布</h2>
+        <p>
+          若整体分布<d-katex tex="X"></d-katex>的均值及方差分别为<d-katex tex="\mu"></d-katex>
+          和<d-katex tex="\sigma^2"></d-katex>，则对于样本数为n的抽样均值分布<d-katex tex="\bar{X}"></d-katex>有：
+        </p>
+        <h3>Mean:</h3>
+        <d-katex tex="E(\bar{X}) = \mu"></d-katex>
+        <h3>Variance:</h3>
+        <d-katex tex="Var(\bar{X}) = \sigma^2 / n"></d-katex>
+        <h3>Standard Error</h3>
+        <d-katex tex="Var(\bar{X}) = \sigma / \sqrt{n}"></d-katex>
+      </div>
+    </d-distribution-layout>
+  </template>
+
+  <script>(function(){'use strict';class a extends Polymer.Element{static get is(){return'd-mean-sd'}static get properties(){return{n:{value:1,type:Number,notify:!0},populationMean:{value:0,type:Number,notify:!0},mean:{type:Number,computed:'_computeMean(populationMean)',notify:!0},populationStd:{value:1,type:Number,notify:!0},std:{type:Number,computed:'_computeStd(populationStd, n)',notify:!0},isPopulationNormal:{type:Boolean,value:!0},isDistributionAvailable:{type:Boolean,computed:'_computeIsDistributionAvailable(isPopulationNormal, n)'}}}static get observers(){return['_redraw(mean, std)']}_computeMean(b){return b}_computeStd(b,c){return b&&c?b/Math.sqrt(c):void 0}_computeIsDistributionAvailable(b,c){return c=+c,!b&&30>c?!1:!0}_redraw(b,c,d){if(b=+b,c=+c,d=+d,b!==this._oldMean||c!==this._oldStd||d!==this._oldN)return this.$.stdInput.invalid=!1,this.$.nInput.invalid=!1,0>=c?void(this.$.stdInput.invalid=!0):0>=d?void(this.$.nInput.invalid=!0):void(this.$.distributionLayout.distributionData=this.$.statNormal.createDistributionData())}_handleXSettingDataChanged(b){let c=b.target.xSettingData;c&&(this.$.distributionLayout.selectedProbability=this.$.statNormal.computeProbability(c.rangeType,c.x1,c.x2).toFixed(3))}}customElements.define(a.is,a)})();</script>
+</dom-module>

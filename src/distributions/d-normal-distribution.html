@@ -1,0 +1,33 @@
+<div hidden="" by-polymer-bundler=""><link rel="import" href="../distribution-app.html"></div><dom-module id="d-normal-distribution">
+  <template>
+    <style include="distribution-style"></style>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <stat-normal id="statNormal" mean="[[mean]]" std="[[std]]" stat-info="{{statInfo}}"></stat-normal>
+
+    <d-distribution-layout id="distributionLayout" stat-info="[[statInfo]]" on-x-setting-data-changed="_handleXSettingDataChanged" continuous="">
+      <div slot="setting" id="setting" class="setting">
+        <paper-input label="Mean" type="number" value="{{mean}}"></paper-input>
+        <paper-input id="stdInput" label="Standard Deviation" type="number" required="" value="{{std}}" error-message="标准差必须为正数"></paper-input>
+      </div>
+
+      <div slot="reference" id="reference" class="reference">
+        <h2 class="title">正态分布
+          <a href="https://zh.wikipedia.org/wiki/%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83" class="wiki">维基百科</a>
+        </h2>
+        <p>正态分布（Normal distribution）又名高斯分布，一个非常普遍、重要的连续性概率分布。</p>
+        <h3>Mean:</h3>
+        <d-katex tex="\mu = E(X)"></d-katex>
+        <h3>Variance:</h3>
+        <d-katex tex="\sigma^2 = Var(X)"></d-katex>
+        <h3>PDF:</h3>
+        <d-katex tex="f(x) = \frac {1} {\sqrt{2\pi\sigma^2} } e^{- \frac {1} {2\sigma^2} (x-\mu)^2} "></d-katex>
+      </div>
+    </d-distribution-layout>
+  </template>
+  <script>(function(){'use strict';class a extends Polymer.Element{static get is(){return'd-normal-distribution'}static get properties(){return{mean:{value:0,type:Number,notify:!0},std:{value:1,type:Number,notify:!0}}}static get observers(){return['_redraw(mean, std)']}_redraw(b,c){if(b=+b,c=+c,b!==this._oldMean||c!==this._oldStd)return this._oldMean=b,this._oldStd=c,this.$.stdInput.invalid=!1,0>=c?void(this.$.stdInput.invalid=!0):void(this.$.distributionLayout.distributionData=this.$.statNormal.createDistributionData())}_handleXSettingDataChanged(b){let c=b.target.xSettingData;c&&(this.$.distributionLayout.selectedProbability=this.$.statNormal.computeProbability(c.rangeType,c.x1,c.x2).toFixed(3))}}customElements.define(a.is,a)})();</script>
+</dom-module>

@@ -1,0 +1,137 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1,user-scalable=yes">
+
+    <title>distribution</title>
+    <meta name="description" content="distribution description">
+    <meta name="theme-color" content="coral">
+
+    <link rel="icon" href="images/favicon.ico">
+
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Distribution">
+
+    
+    <link rel="apple-touch-icon" href="images/manifest/icon-48x48.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/manifest/icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="96x96" href="images/manifest/icon-96x96.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="images/manifest/icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="images/manifest/icon-192x192.png">
+
+    <style media="screen">
+      body {
+        margin: 0;
+      }
+
+      #loadingPanel, #grandpaPanel {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1000;
+      }
+
+      /* Grandpa Panel */
+      #grandpaPanel {
+        display: none;
+      }
+
+      #grandpaPanel.active {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        padding-top: 48px;
+        background-color: black;
+      }
+
+      #grandpaPanel img {
+        max-width: 100vw;
+      }
+
+      #grandpaPanel p, #grandpaPanel a {
+        color: white;
+      }
+
+      #grandpaPanel #continue {
+        margin-top: 24px;
+        background: white;
+        border: none;
+        border-radius: 1px;
+        font-size: 14px;
+        padding: 8px 16px;
+      }
+
+      /* Loading Panel */
+      body.loading #loadingPanel {
+        opacity: 1;
+        background-color: coral;
+      }
+
+      #loader {
+        margin: 120px auto;
+        font-size: 10px;
+        position: relative;
+        text-indent: -9999em;
+        border-top: 1.1em solid rgba(255, 255, 255, 0.2);
+        border-right: 1.1em solid rgba(255, 255, 255, 0.2);
+        border-bottom: 1.1em solid rgba(255, 255, 255, 0.2);
+        border-left: 1.1em solid #ffffff ;
+        transform: translateZ(0);
+        animation: loadAnimation 1.1s infinite linear;
+      }
+
+      #loader,
+      #loader:after {
+        border-radius: 50%;
+        width: 10em;
+        height: 10em;
+      }
+
+      @keyframes loadAnimation {
+        0% {
+          -webkit-transform: rotate(0deg);
+          transform: rotate(0deg);
+        }
+        100% {
+          -webkit-transform: rotate(360deg);
+          transform: rotate(360deg);
+        }
+      }
+
+      #words {
+        color: white;
+        text-align: center;
+      }
+    </style>
+
+    
+    <link rel="manifest" href="manifest.json"> 
+
+    <script src="./bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+    <link rel="import" id="bundle" href="./src/distribution-app.html" async="">
+  </head>
+  <body class="loading">
+    <distribution-app></distribution-app>
+
+    <div id="loadingPanel">
+      <div id="loader"></div>
+      <div id="words">Loading...</div>
+    </div>
+
+    <div id="grandpaPanel">
+      
+      <img>
+      <p><span>该应用只支持Chrome54+/Safari10+的浏览器版本。</span></p>
+      <a href="http://www.google.cn/intl/zh-CN/chrome/browser/desktop/index.html">
+        下载最新的chrome浏览器
+      </a>
+      <button id="continue">继续显示</button>
+    </div>
+    <script>(function(){let c=document.querySelector('#grandpaPanel');if(navigator.standalone)return void document.body.removeChild(c);let d=function(){var i,h=navigator.userAgent,j=h.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i)||[];return /trident/i.test(j[1])?(i=/\brv[ :]+(\d+)/g.exec(h)||[],{name:'IE',version:i[1]||''}):'Chrome'===j[1]&&(i=h.match(/\bOPR|Edge\/(\d+)/),null!=i)?{name:'Opera',version:i[1]}:(j=j[2]?[j[1],j[2]]:[navigator.appName,navigator.appVersion,'-?'],null!=(i=h.match(/version\/(\d+)/i))&&j.splice(1,1,i[1]),{name:j[0],version:j[1]})}(),e={Chrome:54,Safari:10};for(let h in e)if(h===d.name&&e[h]<=+d.version)return void document.body.removeChild(c);c.querySelector('img').src='./images/upgrade.jpg',c.classList.add('active');let g=document.querySelector('#grandpaPanel #continue');g.addEventListener('click',()=>{document.body.removeChild(c)})})(),function(){let a=function(){let d=document.querySelector('#loadingPanel');d.remove(),document.body.classList.remove('loading')},c=document.querySelector('#bundle');return c.import&&'complete'===c.import.readyState?void a():void c.addEventListener('load',a)}();</script>
+  
+
+</body></html>
